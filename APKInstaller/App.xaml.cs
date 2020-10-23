@@ -13,9 +13,8 @@ namespace APKInstaller
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            if (e.Args.Length != 1) Environment.Exit(0);
 
-            Properties.Add("apk", e.Args[0]);
+            if (e.Args.Length >= 1) Properties.Add("apks", e.Args);
             CreateADB();
         }
 

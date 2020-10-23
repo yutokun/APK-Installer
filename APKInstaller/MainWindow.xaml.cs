@@ -14,7 +14,48 @@ namespace APKInstaller
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
             AddMessage("ここに APK をドロップするとインストールできます。");
+            AddEmptyLine();
+
+            if (Application.Current.Properties.Contains("apks"))
+            {
+                AddMessage("起動時に渡された APK をインストールします。");
+                var apks = Application.Current.Properties["apks"] as string[];
+                BatchInstall(apks);
+            }
+        }
+
+        void BatchInstall(string[] files)
+        {
+            var apks = files.Where(f => f.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))
+                            .ToArray();
+
+            if (apks.Length == 0)
+            {
+                AddMessage("APK がドロップされませんでした。\n");
+                return;
+            }
+
+            var text = "インストールする APK：";
+            foreach (var apk in apks)
+            {
+                text = $"{text}\n{apk}";
+            }
+
+            AddMessage($"{text}");
+            AddEmptyLine();
+
+            foreach (var apk in apks)
+            {
+                Install(apk);
+            }
+
             AddEmptyLine();
         }
 
@@ -43,30 +84,7 @@ namespace APKInstaller
         void MainWindow_OnDrop(object sender, DragEventArgs e)
         {
             var files = e.Data.GetData(DataFormats.FileDrop) as string[];
-            var apks = files.Where(f => f.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))
-                            .ToArray();
-
-            if (apks.Length == 0)
-            {
-                AddMessage("APK がドロップされませんでした。\n");
-                return;
-            }
-
-            var text = "インストールする APK：";
-            foreach (var apk in apks)
-            {
-                text = $"{text}\n{apk}";
-            }
-
-            AddMessage($"{text}");
-            AddEmptyLine();
-
-            foreach (var apk in apks)
-            {
-                Install(apk);
-            }
-
-            AddEmptyLine();
+            BatchInstall(files);
         }
 
         void MainWindow_OnPreviewDragOver(object sender, DragEventArgs e)
