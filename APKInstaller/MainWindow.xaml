@@ -1,0 +1,18 @@
+﻿<Window x:Class="APKInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:APKInstaller"
+        mc:Ignorable="d"
+        AllowDrop="True"
+        Title="APK Installer" Height="350" Width="525">
+    <Grid>
+        <TextBox Name="Redirect"
+                 IsReadOnly="True"
+                 VerticalScrollBarVisibility="Auto"
+                 AllowDrop="True"
+                 PreviewDragOver="MainWindow_OnPreviewDragOver"
+                 PreviewDrop="MainWindow_OnDrop" />
+    </Grid>
+</Window>
