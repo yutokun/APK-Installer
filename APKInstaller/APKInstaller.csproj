@@ -5,7 +5,7 @@
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProjectGuid>{B0C56953-59EC-404A-B01F-806729D44426}</ProjectGuid>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <RootNamespace>APKInstaller</RootNamespace>
         <AssemblyName>APKInstaller</AssemblyName>
         <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
