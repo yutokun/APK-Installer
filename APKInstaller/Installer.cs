@@ -71,11 +71,11 @@ namespace APKInstaller
                 return;
             }
 
-            var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
-            if (validDevices.Length >= 2)
+            var unauthorizedDevices = devices.Where(d => d.IsUnauthorized).ToArray();
+            if (unauthorizedDevices.Length >= 1)
             {
-                var deviceText = "複数のデバイスにインストールします：";
-                foreach (var device in validDevices)
+                var deviceText = "次のデバイスは、このコンピュータで USB デバッグを許可する必要があります：";
+                foreach (var device in unauthorizedDevices)
                 {
                     deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
                 }
@@ -84,10 +84,16 @@ namespace APKInstaller
                 AddEmptyLine();
             }
 
-            var unauthorizedDevices = devices.Where(d => d.IsUnauthorized).ToArray();
-            if (unauthorizedDevices.Length >= 1)
+            var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
+            if (validDevices.Length == 0)
             {
-                var deviceText = "次のデバイスは、このコンピュータで USB デバッグを許可する必要があります：";
+                AddMessage("インストール可能なデバイスがありません。");
+                AddEmptyLine();
+            }
+
+            if (validDevices.Length >= 2)
+            {
+                var deviceText = "複数のデバイスにインストールします：";
                 foreach (var device in validDevices)
                 {
                     deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
