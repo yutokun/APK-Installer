@@ -31,6 +31,14 @@ namespace APKInstaller
         {
             CreateADB();
             EnsureADBDaemonRunning();
+
+            if (Application.Current.Properties.Contains("apks"))
+            {
+                AddMessage("起動時に渡された APK をインストールします。");
+                var apks = Application.Current.Properties["apks"] as string[];
+                BatchInstall(apks);
+            }
+
             AddMessage("ここに APK をドロップするとインストールできます。");
             AddEmptyLine();
         }

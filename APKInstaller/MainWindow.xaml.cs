@@ -22,18 +22,6 @@ namespace APKInstaller
             Window.Title += $" - v{ver.ProductVersion}";
         }
 
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
-
-            if (Application.Current.Properties.Contains("apks"))
-            {
-                AddMessage("起動時に渡された APK をインストールします。");
-                var apks = Application.Current.Properties["apks"] as string[];
-                OnFileDropped?.Invoke(apks);
-            }
-        }
-
         protected override void OnContentRendered(EventArgs e)
         {
             base.OnContentRendered(e);
