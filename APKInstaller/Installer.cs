@@ -27,10 +27,10 @@ namespace APKInstaller
             App.OnExitAction += OnExit;
         }
 
-        void OnContentRendered()
+        async void OnContentRendered()
         {
             CreateADB();
-            EnsureADBDaemonRunning();
+            await EnsureADBDaemonRunning();
 
             if (Application.Current.Properties.Contains("apks"))
             {
@@ -38,8 +38,11 @@ namespace APKInstaller
                 var apks = Application.Current.Properties["apks"] as string[];
                 BatchInstall(apks);
             }
+            else
+            {
+                AddMessage("ここに APK をドロップするとインストールできます。");
+            }
 
-            AddMessage("ここに APK をドロップするとインストールできます。");
             AddEmptyLine();
         }
 
@@ -77,27 +80,31 @@ namespace APKInstaller
             }
         }
 
-        void EnsureADBDaemonRunning()
+        async Task EnsureADBDaemonRunning()
         {
-            var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-            if (noExistingADB)
+            await Task.Run(() =>
             {
-                var startInfo = new ProcessStartInfo
+                var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
+                if (noExistingADB)
                 {
-                    FileName = pathToADB,
-                    Arguments = "start-server",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = pathToADB,
+                        Arguments = "start-server",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
 
-                AddMessage("ADB デーモンを起動しています...");
-                var process = Process.Start(startInfo);
-                process.WaitForExit();
-                AddMessage("完了");
-                AddEmptyLine();
+                    AddMessage("ADB デーモンを起動しています...");
+                    var process = new Process { StartInfo = startInfo };
+                    process.Start();
+                    process.WaitForExit();
 
-                usingOwnedServer = true;
-            }
+                    AddMessage("完了");
+                    AddEmptyLine();
+                    usingOwnedServer = true;
+                }
+            });
         }
 
         async void BatchInstall(string[] files)
@@ -206,7 +213,7 @@ namespace APKInstaller
             return devices;
         }
 
-        Task<string> RunADB(string arguments, bool autoHandle = true)
+        async Task<string> RunADB(string arguments, bool autoHandle = true)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -219,7 +226,7 @@ namespace APKInstaller
             };
 
             var output = "";
-            EnsureADBDaemonRunning();
+            await EnsureADBDaemonRunning();
 
             using (var process = new Process())
             {
@@ -243,7 +250,7 @@ namespace APKInstaller
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
-                return Task.FromResult(output);
+                return output;
             }
         }
 
