@@ -66,7 +66,7 @@ namespace APKInstaller
             var devices = await GetDevices();
             if (devices.Count == 0)
             {
-                AddMessage("デバイスが接続されていません。");
+                AddMessage("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 AddEmptyLine();
                 return;
             }
@@ -87,7 +87,7 @@ namespace APKInstaller
             var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
             if (validDevices.Length == 0)
             {
-                AddMessage("インストール可能なデバイスがありません。");
+                AddMessage("インストール可能なデバイスがありません。接続したデバイスで、このコンピュータによる USB デバッグが許可されていることを確認して下さい。");
                 AddEmptyLine();
             }
 
