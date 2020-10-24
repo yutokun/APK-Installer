@@ -106,11 +106,9 @@ namespace APKInstaller
 
         void HandleOutput(string message, Process process)
         {
-            if (string.IsNullOrEmpty(message))
-            {
-                return;
-            }
-            else if (message.Contains("Success"))
+            if (string.IsNullOrEmpty(message)) return;
+
+            if (message.Contains("Success"))
             {
                 AddMessage("インストール完了");
             }
