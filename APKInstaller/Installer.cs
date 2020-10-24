@@ -91,13 +91,30 @@ namespace APKInstaller
             {
                 process.EnableRaisingEvents = true;
                 process.StartInfo = startInfo;
-                process.OutputDataReceived += (sender, args) => AddMessage(args.Data);
-                process.ErrorDataReceived += (sender, args) => AddMessage(args.Data);
+                process.OutputDataReceived += (sender, args) => HandleOutput(args.Data, process);
+                process.ErrorDataReceived += (sender, args) => HandleOutput(args.Data, process);
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
                 return Task.CompletedTask;
+            }
+        }
+
+        void HandleOutput(string message, Process process)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                AddMessage(message);
+            }
+            else if (message.Contains("no devices/emulators found"))
+            {
+                AddMessage("デバイスが見つかりません。デバイスが開発者モードであること、このコンピュータによる USB デバッグが許可されていること、正しく接続されていることを確認して下さい。");
+                process.Kill();
+            }
+            else
+            {
+                AddMessage(message);
             }
         }
 
