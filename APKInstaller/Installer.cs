@@ -89,16 +89,15 @@ namespace APKInstaller
 
             using (var process = new Process())
             {
-                var tcs = new TaskCompletionSource<bool>();
                 process.EnableRaisingEvents = true;
                 process.StartInfo = startInfo;
                 process.OutputDataReceived += (sender, args) => AddMessage(args.Data);
                 process.ErrorDataReceived += (sender, args) => AddMessage(args.Data);
-                process.Exited += (sender, args) => tcs.SetResult(true);
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
-                return tcs.Task;
+                process.WaitForExit();
+                return Task.CompletedTask;
             }
         }
 
