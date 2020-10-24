@@ -26,14 +26,19 @@ namespace APKInstaller
 
         ~Installer()
         {
-            File.Delete(pathToADB);
+            var path = Directory.GetParent(pathToADB).FullName;
+            Directory.Delete(path, true);
         }
 
         void CreateADB()
         {
             var resourceUri = new Uri("/adb.exe", UriKind.Relative);
             var adbStream = Application.GetResourceStream(resourceUri);
-            var adbPath = Path.GetTempFileName().Replace(".tmp", ".exe");
+            var adbDirectory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
+            Directory.CreateDirectory(adbDirectory);
+            var adbPath = Path.Combine(adbDirectory, "adb.exe");
+            Debug.WriteLine(adbPath);
+
             var adbBinary = new byte[adbStream.Stream.Length];
             adbStream.Stream.Read(adbBinary, 0, (int)adbStream.Stream.Length);
 
