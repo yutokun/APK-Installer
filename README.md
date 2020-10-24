@@ -8,6 +8,10 @@
 
 `adb install -r path/to/apk` を叩くのが面倒になってしまって…
 
+## ダウンロード
+
+[ここをクリック](https://github.com/yutokun/APK-Installer/releases/latest/download/APKInstaller.exe)してダウンロードできます。
+
 ## できること
 
 - ウインドウにドロップしてインストール
