@@ -11,6 +11,7 @@
         <TextBox Name="Redirect"
                  IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto"
+                 TextWrapping="Wrap"
                  AllowDrop="True"
                  PreviewDragOver="MainWindow_OnPreviewDragOver"
                  PreviewDrop="MainWindow_OnPreviewDrop" />
