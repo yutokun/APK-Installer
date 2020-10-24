@@ -21,11 +21,18 @@ namespace APKInstaller
 
         Installer()
         {
-            CreateADB();
-            EnsureADBServerExist();
             mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.OnFileDropped += BatchInstall;
+            mainWindow.OnContentRenderedAction += OnContentRendered;
             App.OnExitAction += OnExit;
+        }
+
+        void OnContentRendered()
+        {
+            CreateADB();
+            EnsureADBDaemonRunning();
+            AddMessage("ここに APK をドロップするとインストールできます。");
+            AddEmptyLine();
         }
 
         void OnExit()
@@ -62,7 +69,7 @@ namespace APKInstaller
             }
         }
 
-        void EnsureADBServerExist()
+        void EnsureADBDaemonRunning()
         {
             var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
             if (noExistingADB)
@@ -74,7 +81,13 @@ namespace APKInstaller
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
-                Process.Start(startInfo);
+
+                AddMessage("ADB デーモンを起動しています...");
+                var process = Process.Start(startInfo);
+                process.WaitForExit();
+                AddMessage("完了");
+                AddEmptyLine();
+
                 usingOwnedServer = true;
             }
         }
@@ -198,7 +211,7 @@ namespace APKInstaller
             };
 
             var output = "";
-            EnsureADBServerExist();
+            EnsureADBDaemonRunning();
 
             using (var process = new Process())
             {

@@ -12,6 +12,7 @@ namespace APKInstaller
     public partial class MainWindow
     {
         public event Action<string[]> OnFileDropped;
+        public event Action OnContentRenderedAction;
 
         public MainWindow()
         {
@@ -25,15 +26,19 @@ namespace APKInstaller
         {
             base.OnInitialized(e);
 
-            AddMessage("ここに APK をドロップするとインストールできます。");
-            AddEmptyLine();
-
             if (Application.Current.Properties.Contains("apks"))
             {
                 AddMessage("起動時に渡された APK をインストールします。");
                 var apks = Application.Current.Properties["apks"] as string[];
                 OnFileDropped?.Invoke(apks);
             }
+        }
+
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+
+            OnContentRenderedAction?.Invoke();
         }
 
         void MainWindow_OnPreviewDrop(object sender, DragEventArgs e)
