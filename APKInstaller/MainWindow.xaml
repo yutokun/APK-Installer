@@ -9,6 +9,7 @@
         Title="APK Installer" Height="350" Width="525">
     <Grid>
         <TextBox Name="Redirect"
+                 BorderThickness="0"
                  IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto"
                  TextWrapping="Wrap"
