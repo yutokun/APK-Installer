@@ -109,7 +109,7 @@ namespace APKInstaller
                 AddEmptyLine();
             }
 
-            foreach (var device in devices)
+            foreach (var device in validDevices)
             {
                 AddMessage($"{device.Model} へのインストールを開始します。（シリアル：{device.Serial}）");
                 foreach (var apk in apks)
