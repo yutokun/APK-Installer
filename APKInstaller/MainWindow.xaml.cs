@@ -104,7 +104,7 @@ namespace APKInstaller
 
         void AddMessage(string message)
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 Redirect.Text = $"{Redirect.Text}\n{message}";
                 Redraw();
