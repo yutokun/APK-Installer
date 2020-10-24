@@ -46,18 +46,37 @@ namespace APKInstaller
             AddEmptyLine();
         }
 
-        void OnExit()
+        async void OnExit()
         {
             if (usingOwnedServer)
             {
-                Process.Start(pathToADB, "kill-server");
-            }
-        }
+                await Task.Run(() =>
+                {
+                    var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
+                    if (noExistingADB)
+                    {
+                        var startInfo = new ProcessStartInfo
+                        {
+                            FileName = pathToADB,
+                            Arguments = "kill-server",
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
 
-        ~Installer()
-        {
-            var path = Directory.GetParent(pathToADB).FullName;
-            Directory.Delete(path, true);
+                        AddMessage("ADB デーモンを終了しています...");
+                        var process = new Process { StartInfo = startInfo };
+                        process.Start();
+                        process.WaitForExit();
+
+                        AddMessage("完了");
+                        AddEmptyLine();
+                        usingOwnedServer = true;
+                    }
+
+                    var path = Directory.GetParent(pathToADB).FullName;
+                    Directory.Delete(path, true);
+                });
+            }
         }
 
         void CreateADB()
