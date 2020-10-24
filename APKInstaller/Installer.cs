@@ -109,7 +109,7 @@ namespace APKInstaller
             }
             else if (message.Contains("no devices/emulators found"))
             {
-                AddMessage("デバイスが見つかりません。デバイスが開発者モードであること、このコンピュータによる USB デバッグが許可されていること、正しく接続されていることを確認して下さい。");
+                AddMessage("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 process.Kill();
             }
             else
