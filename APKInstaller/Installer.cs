@@ -108,7 +108,11 @@ namespace APKInstaller
         {
             if (string.IsNullOrEmpty(message))
             {
-                AddMessage(message);
+                return;
+            }
+            else if (message.Contains("Success"))
+            {
+                AddMessage("インストール完了");
             }
             else if (message.Contains("no devices/emulators found"))
             {
@@ -118,6 +122,8 @@ namespace APKInstaller
             else
             {
                 AddMessage(message);
+                AddMessage("未知のメッセージを受け取ったため、処理を中止しました。");
+                process.Kill();
             }
 
             AddEmptyLine();
