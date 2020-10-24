@@ -189,7 +189,7 @@ namespace APKInstaller
 
         async Task Install(string path, ADBDevice target)
         {
-            AddMessage($"インストール中：{path}");
+            AddMessage($"インストール中...：{path}");
             await RunADB($"-s {target.Serial} install -r \"{path}\"");
         }
 
