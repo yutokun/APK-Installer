@@ -178,12 +178,14 @@ namespace APKInstaller
                 process.OutputDataReceived += (sender, args) =>
                 {
                     if (string.IsNullOrWhiteSpace(args.Data)) return;
+                    if (args.Data.StartsWith("*")) return;
                     output += $"{args.Data}\n";
                     if (autoHandle) HandleOutput(args.Data, process);
                 };
                 process.ErrorDataReceived += (sender, args) =>
                 {
                     if (string.IsNullOrWhiteSpace(args.Data)) return;
+                    if (args.Data.StartsWith("*")) return;
                     output += $"{args.Data}\n";
                     if (autoHandle) HandleOutput(args.Data, process);
                 };
