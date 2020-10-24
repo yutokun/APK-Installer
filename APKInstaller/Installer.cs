@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -57,52 +58,136 @@ namespace APKInstaller
 
             if (apks.Length == 0)
             {
-                AddMessage("APK がドロップされませんでした。\n");
+                AddMessage("APK がドロップされませんでした。");
+                AddEmptyLine();
                 return;
             }
 
-            var text = "インストールする APK：";
-            foreach (var apk in apks)
+            var devices = await GetDevices();
+            if (devices.Count == 0)
             {
-                text = $"{text}\n{apk}";
+                AddMessage("デバイスが接続されていません。");
+                AddEmptyLine();
+                return;
             }
 
-            AddMessage($"{text}");
+            var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
+            if (validDevices.Length >= 2)
+            {
+                var deviceText = "複数のデバイスにインストールします：";
+                foreach (var device in validDevices)
+                {
+                    deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
+                }
+
+                AddMessage($"{deviceText}");
+                AddEmptyLine();
+            }
+
+            var unauthorizedDevices = devices.Where(d => d.IsUnauthorized).ToArray();
+            if (unauthorizedDevices.Length >= 1)
+            {
+                var deviceText = "次のデバイスは、このコンピュータで USB デバッグを許可する必要があります：";
+                foreach (var device in validDevices)
+                {
+                    deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
+                }
+
+                AddMessage($"{deviceText}");
+                AddEmptyLine();
+            }
+
+            if (apks.Length >= 2)
+            {
+                var text = "複数の APK をインストールします：";
+                foreach (var apk in apks)
+                {
+                    text = $"{text}\n{apk}";
+                }
+
+                AddMessage($"{text}");
+                AddEmptyLine();
+            }
+
+            foreach (var device in devices)
+            {
+                AddMessage($"{device.Model} へのインストールを開始します。（シリアル：{device.Serial}）");
+                foreach (var apk in apks)
+                {
+                    await Task.Run(() => Install(apk, device));
+                }
+
+                AddEmptyLine();
+            }
+
+            AddMessage("全てのインストールが完了しました。");
             AddEmptyLine();
-
-            foreach (var apk in apks)
-            {
-                await Task.Run(() => Install(apk));
-            }
         }
 
-        Task Install(string path)
+        async Task Install(string path, ADBDevice target)
         {
-            AddMessage($"インストールしています：{path}");
+            AddMessage($"インストール中：{path}");
+            await RunADB($"-s {target.Serial} install -r \"{path}\"");
+        }
 
+        async Task<List<ADBDevice>> GetDevices()
+        {
+            var devices = new List<ADBDevice>();
+            var result = await RunADB("devices", false);
+            var sr = new StringReader(result);
+            var line = "";
+            await sr.ReadLineAsync();
+            while ((line = await sr.ReadLineAsync()) != null)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                var parameters = line.Split('\t');
+                var device = new ADBDevice { Serial = parameters[0], State = parameters[1] };
+                device.Model = await RunADB($"-s {device.Serial} shell getprop ro.product.model", false);
+                device.Model = device.Model.Replace("\n", "");
+                devices.Add(device);
+            }
+
+            return devices;
+        }
+
+        Task<string> RunADB(string arguments, bool autoHandle = true)
+        {
             var startInfo = new ProcessStartInfo
             {
                 FileName = pathToADB,
-                Arguments = $"install -r \"{path}\"",
+                Arguments = arguments,
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
 
+            var output = "";
+
             using (var process = new Process())
             {
                 process.EnableRaisingEvents = true;
                 process.StartInfo = startInfo;
-                process.OutputDataReceived += (sender, args) => HandleOutput(args.Data, process);
-                process.ErrorDataReceived += (sender, args) => HandleOutput(args.Data, process);
+                process.OutputDataReceived += (sender, args) =>
+                {
+                    if (string.IsNullOrWhiteSpace(args.Data)) return;
+                    output += $"{args.Data}\n";
+                    if (autoHandle) HandleOutput(args.Data, process);
+                };
+                process.ErrorDataReceived += (sender, args) =>
+                {
+                    if (string.IsNullOrWhiteSpace(args.Data)) return;
+                    output += $"{args.Data}\n";
+                    if (autoHandle) HandleOutput(args.Data, process);
+                };
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
-                return Task.CompletedTask;
+                return Task.FromResult(output);
             }
         }
+
 
         void HandleOutput(string message, Process process)
         {
@@ -115,16 +200,15 @@ namespace APKInstaller
             else if (message.Contains("no devices/emulators found"))
             {
                 AddMessage("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                AddEmptyLine();
                 process.Kill();
             }
             else
             {
                 AddMessage(message);
                 AddMessage("未知のメッセージを受け取ったため、処理を中止しました。");
-                process.Kill();
+                AddEmptyLine();
             }
-
-            AddEmptyLine();
         }
 
         void AddMessage(string message) => mainWindow.AddMessage(message);
