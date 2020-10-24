@@ -74,10 +74,10 @@ namespace APKInstaller
             var unauthorizedDevices = devices.Where(d => d.IsUnauthorized).ToArray();
             if (unauthorizedDevices.Length >= 1)
             {
-                var deviceText = "次のデバイスは、このコンピュータで USB デバッグを許可する必要があります：";
+                var deviceText = "次のデバイスは、このコンピュータによる USB デバッグを許可する必要があります：";
                 foreach (var device in unauthorizedDevices)
                 {
-                    deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
+                    deviceText = $"{deviceText}\nシリアル：{device.Serial}";
                 }
 
                 AddMessage($"{deviceText}");
@@ -87,8 +87,9 @@ namespace APKInstaller
             var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
             if (validDevices.Length == 0)
             {
-                AddMessage("インストール可能なデバイスがありません。接続したデバイスで、このコンピュータによる USB デバッグが許可されていることを確認して下さい。");
+                AddMessage("インストール可能なデバイスがありません。");
                 AddEmptyLine();
+                return;
             }
 
             if (validDevices.Length >= 2)
