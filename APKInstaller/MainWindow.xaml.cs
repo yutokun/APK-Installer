@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -15,6 +17,8 @@ namespace APKInstaller
         {
             InitializeComponent();
             Installer.Initialize();
+            var ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            Window.Title += $" - v{ver.ProductVersion}";
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -44,8 +48,6 @@ namespace APKInstaller
             e.Effects = isPresent ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
         }
-        
-        
 
         public void AddMessage(string message)
         {
