@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -12,9 +9,12 @@ namespace APKInstaller
     /// </summary>
     public partial class MainWindow
     {
+        public event Action<string[]> OnFileDropped;
+
         public MainWindow()
         {
             InitializeComponent();
+            Installer.Initialize();
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -28,71 +28,14 @@ namespace APKInstaller
             {
                 AddMessage("起動時に渡された APK をインストールします。");
                 var apks = Application.Current.Properties["apks"] as string[];
-                BatchInstall(apks);
+                OnFileDropped?.Invoke(apks);
             }
         }
 
-        async void BatchInstall(string[] files)
-        {
-            var apks = files.Where(f => f.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))
-                            .ToArray();
-
-            if (apks.Length == 0)
-            {
-                AddMessage("APK がドロップされませんでした。\n");
-                return;
-            }
-
-            var text = "インストールする APK：";
-            foreach (var apk in apks)
-            {
-                text = $"{text}\n{apk}";
-            }
-
-            AddMessage($"{text}");
-            AddEmptyLine();
-
-            foreach (var apk in apks)
-            {
-                await Task.Run(() => Install(apk));
-            }
-
-            AddEmptyLine();
-        }
-
-        Task Install(string path)
-        {
-            AddMessage($"インストールしています：{path}");
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = Application.Current.Properties["adb"].ToString(),
-                Arguments = $"install -r \"{path}\"",
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
-
-            using (var process = new Process())
-            {
-                var tcs = new TaskCompletionSource<bool>();
-                process.EnableRaisingEvents = true;
-                process.StartInfo = startInfo;
-                process.OutputDataReceived += (sender, args) => AddMessage(args.Data);
-                process.ErrorDataReceived += (sender, args) => AddMessage(args.Data);
-                process.Exited += (sender, args) => tcs.SetResult(true);
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                return tcs.Task;
-            }
-        }
-
-        void MainWindow_OnDrop(object sender, DragEventArgs e)
+        void MainWindow_OnPreviewDrop(object sender, DragEventArgs e)
         {
             var files = e.Data.GetData(DataFormats.FileDrop) as string[];
-            BatchInstall(files);
+            OnFileDropped?.Invoke(files);
         }
 
         void MainWindow_OnPreviewDragOver(object sender, DragEventArgs e)
@@ -102,7 +45,7 @@ namespace APKInstaller
             e.Handled = true;
         }
 
-        void AddMessage(string message)
+        public void AddMessage(string message)
         {
             Dispatcher.Invoke(() =>
             {
@@ -112,7 +55,7 @@ namespace APKInstaller
             });
         }
 
-        void AddEmptyLine()
+        public void AddEmptyLine()
         {
             AddMessage(string.Empty);
         }

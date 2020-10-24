@@ -13,6 +13,6 @@
                  VerticalScrollBarVisibility="Auto"
                  AllowDrop="True"
                  PreviewDragOver="MainWindow_OnPreviewDragOver"
-                 PreviewDrop="MainWindow_OnDrop" />
+                 PreviewDrop="MainWindow_OnPreviewDrop" />
     </Grid>
 </Window>
