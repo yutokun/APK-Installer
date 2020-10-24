@@ -22,6 +22,7 @@ namespace APKInstaller
         Installer()
         {
             CreateADB();
+            EnsureADBServerExist();
             mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.OnFileDropped += BatchInstall;
             App.OnExitAction += OnExit;
@@ -58,6 +59,23 @@ namespace APKInstaller
                 fs.Write(adbBinary, 0, adbBinary.Length);
                 Debug.WriteLine(adbPath);
                 pathToADB = adbPath;
+            }
+        }
+
+        void EnsureADBServerExist()
+        {
+            var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
+            if (noExistingADB)
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = pathToADB,
+                    Arguments = "start-server",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                Process.Start(startInfo);
+                usingOwnedServer = true;
             }
         }
 
@@ -180,7 +198,7 @@ namespace APKInstaller
             };
 
             var output = "";
-            if (!usingOwnedServer) usingOwnedServer = Process.GetProcessesByName("adb").Length == 0;
+            EnsureADBServerExist();
 
             using (var process = new Process())
             {
