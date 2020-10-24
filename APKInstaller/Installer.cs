@@ -12,6 +12,7 @@ namespace APKInstaller
     {
         string pathToADB;
         readonly MainWindow mainWindow;
+        bool usingOwnedServer;
 
         public static void Initialize()
         {
@@ -23,6 +24,15 @@ namespace APKInstaller
             CreateADB();
             mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.OnFileDropped += BatchInstall;
+            App.OnExitAction += OnExit;
+        }
+
+        void OnExit()
+        {
+            if (usingOwnedServer)
+            {
+                Process.Start(pathToADB, "kill-server");
+            }
         }
 
         ~Installer()
@@ -170,6 +180,7 @@ namespace APKInstaller
             };
 
             var output = "";
+            if (!usingOwnedServer) usingOwnedServer = Process.GetProcessesByName("adb").Length == 0;
 
             using (var process = new Process())
             {

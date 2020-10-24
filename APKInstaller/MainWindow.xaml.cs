@@ -44,6 +44,8 @@ namespace APKInstaller
             e.Effects = isPresent ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
         }
+        
+        
 
         public void AddMessage(string message)
         {
