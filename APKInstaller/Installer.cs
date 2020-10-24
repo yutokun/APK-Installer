@@ -74,8 +74,6 @@ namespace APKInstaller
             {
                 await Task.Run(() => Install(apk));
             }
-
-            AddEmptyLine();
         }
 
         Task Install(string path)
@@ -121,6 +119,8 @@ namespace APKInstaller
             {
                 AddMessage(message);
             }
+
+            AddEmptyLine();
         }
 
         void AddMessage(string message) => mainWindow.AddMessage(message);
