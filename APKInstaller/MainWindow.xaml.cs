@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -31,7 +32,7 @@ namespace APKInstaller
             }
         }
 
-        void BatchInstall(string[] files)
+        async void BatchInstall(string[] files)
         {
             var apks = files.Where(f => f.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))
                             .ToArray();
@@ -53,13 +54,13 @@ namespace APKInstaller
 
             foreach (var apk in apks)
             {
-                Install(apk);
+                await Task.Run(() => Install(apk));
             }
 
             AddEmptyLine();
         }
 
-        void Install(string path)
+        Task Install(string path)
         {
             AddMessage($"インストールしています：{path}");
 
@@ -72,13 +73,20 @@ namespace APKInstaller
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-            var process = new Process { StartInfo = startInfo };
-            process.Start();
 
-            var result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            AddMessage(result == "Success\r\n" ? "インストール完了" : result);
-            Debug.WriteLine(result);
+            using (var process = new Process())
+            {
+                var tcs = new TaskCompletionSource<bool>();
+                process.EnableRaisingEvents = true;
+                process.StartInfo = startInfo;
+                process.OutputDataReceived += (sender, args) => AddMessage(args.Data);
+                process.ErrorDataReceived += (sender, args) => AddMessage(args.Data);
+                process.Exited += (sender, args) => tcs.SetResult(true);
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                return tcs.Task;
+            }
         }
 
         void MainWindow_OnDrop(object sender, DragEventArgs e)
@@ -96,9 +104,12 @@ namespace APKInstaller
 
         void AddMessage(string message)
         {
-            Redirect.Text = $"{Redirect.Text}\n{message}";
-            Redraw();
-            Redirect.ScrollToEnd();
+            this.Dispatcher.Invoke(() =>
+            {
+                Redirect.Text = $"{Redirect.Text}\n{message}";
+                Redraw();
+                Redirect.ScrollToEnd();
+            });
         }
 
         void AddEmptyLine()
