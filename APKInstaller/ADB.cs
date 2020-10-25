@@ -11,7 +11,7 @@ namespace APKInstaller
         static string pathToADB;
         static bool usingOwnedServer;
 
-        public static void Initialize()
+        public static async void Initialize()
         {
             var resourceUri = new Uri("/adb.exe", UriKind.Relative);
             var adbStream = Application.GetResourceStream(resourceUri);
@@ -21,13 +21,15 @@ namespace APKInstaller
             Debug.WriteLine(adbPath);
 
             var adbBinary = new byte[adbStream.Stream.Length];
-            adbStream.Stream.Read(adbBinary, 0, (int)adbStream.Stream.Length);
+            await adbStream.Stream.ReadAsync(adbBinary, 0, (int)adbStream.Stream.Length);
 
             using (var fs = new FileStream(adbPath, FileMode.Create))
             {
                 fs.Write(adbBinary, 0, adbBinary.Length);
                 pathToADB = adbPath;
             }
+
+            await EnsureDaemonRunning();
 
             App.OnExitAction += Terminate;
         }
@@ -65,7 +67,7 @@ namespace APKInstaller
             }
         }
 
-        public static async Task EnsureDaemonRunning()
+        static async Task EnsureDaemonRunning()
         {
             await Task.Run(() =>
             {
