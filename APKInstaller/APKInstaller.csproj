@@ -55,6 +55,7 @@
             <SubType>Designer</SubType>
         </Page>
         <Compile Include="ADBDevice.cs" />
+        <Compile Include="ADB.cs" />
         <Compile Include="App.xaml.cs">
             <DependentUpon>App.xaml</DependentUpon>
             <SubType>Code</SubType>
@@ -66,6 +67,7 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Message.cs" />
         <Compile Include="Properties\AssemblyInfo.cs">
             <SubType>Code</SubType>
         </Compile>

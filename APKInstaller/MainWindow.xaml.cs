@@ -17,6 +17,7 @@ namespace APKInstaller
         public MainWindow()
         {
             InitializeComponent();
+            Message.Initialize();
             Installer.Initialize();
             var ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             Window.Title += $" - v{ver.ProductVersion}";

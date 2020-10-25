@@ -10,120 +10,44 @@ namespace APKInstaller
 {
     public class Installer
     {
-        string pathToADB;
+        static Installer instance;
         readonly MainWindow mainWindow;
-        bool usingOwnedServer;
 
         public static void Initialize()
         {
-            new Installer();
+            if (instance != null) return;
+            instance = new Installer();
         }
 
         Installer()
         {
             mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.OnFileDropped += BatchInstall;
-            mainWindow.OnContentRenderedAction += OnContentRendered;
-            App.OnExitAction += OnExit;
+            mainWindow.OnContentRenderedAction += OnWindowAppeared;
         }
 
-        async void OnContentRendered()
+        ~Installer()
         {
-            CreateADB();
-            await EnsureADBDaemonRunning();
+            instance = null;
+        }
+
+        async void OnWindowAppeared()
+        {
+            ADB.Initialize();
+            await ADB.EnsureDaemonRunning();
 
             if (Application.Current.Properties.Contains("apks"))
             {
-                AddMessage("起動時に渡された APK をインストールします。");
+                Message.Add("起動時に渡された APK をインストールします。");
                 var apks = Application.Current.Properties["apks"] as string[];
                 BatchInstall(apks);
             }
             else
             {
-                AddMessage("ここに APK をドロップするとインストールできます。");
+                Message.Add("ここに APK をドロップするとインストールできます。");
             }
 
-            AddEmptyLine();
-        }
-
-        async void OnExit()
-        {
-            if (usingOwnedServer)
-            {
-                await Task.Run(() =>
-                {
-                    var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-                    if (noExistingADB)
-                    {
-                        var startInfo = new ProcessStartInfo
-                        {
-                            FileName = pathToADB,
-                            Arguments = "kill-server",
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        AddMessage("ADB デーモンを終了しています...");
-                        var process = new Process { StartInfo = startInfo };
-                        process.Start();
-                        process.WaitForExit();
-
-                        AddMessage("完了");
-                        AddEmptyLine();
-                        usingOwnedServer = true;
-                    }
-
-                    var path = Directory.GetParent(pathToADB).FullName;
-                    Directory.Delete(path, true);
-                });
-            }
-        }
-
-        void CreateADB()
-        {
-            var resourceUri = new Uri("/adb.exe", UriKind.Relative);
-            var adbStream = Application.GetResourceStream(resourceUri);
-            var adbDirectory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
-            Directory.CreateDirectory(adbDirectory);
-            var adbPath = Path.Combine(adbDirectory, "adb.exe");
-            Debug.WriteLine(adbPath);
-
-            var adbBinary = new byte[adbStream.Stream.Length];
-            adbStream.Stream.Read(adbBinary, 0, (int)adbStream.Stream.Length);
-
-            using (var fs = new FileStream(adbPath, FileMode.Create))
-            {
-                fs.Write(adbBinary, 0, adbBinary.Length);
-                Debug.WriteLine(adbPath);
-                pathToADB = adbPath;
-            }
-        }
-
-        async Task EnsureADBDaemonRunning()
-        {
-            await Task.Run(() =>
-            {
-                var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-                if (noExistingADB)
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        FileName = pathToADB,
-                        Arguments = "start-server",
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    };
-
-                    AddMessage("ADB デーモンを起動しています...");
-                    var process = new Process { StartInfo = startInfo };
-                    process.Start();
-                    process.WaitForExit();
-
-                    AddMessage("完了");
-                    AddEmptyLine();
-                    usingOwnedServer = true;
-                }
-            });
+            Message.AddEmptyLine();
         }
 
         async void BatchInstall(string[] files)
@@ -133,16 +57,16 @@ namespace APKInstaller
 
             if (apks.Length == 0)
             {
-                AddMessage("APK がドロップされませんでした。");
-                AddEmptyLine();
+                Message.Add("APK がドロップされませんでした。");
+                Message.AddEmptyLine();
                 return;
             }
 
             var devices = await GetDevices();
             if (devices.Count == 0)
             {
-                AddMessage("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
-                AddEmptyLine();
+                Message.Add("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.AddEmptyLine();
                 return;
             }
 
@@ -155,15 +79,15 @@ namespace APKInstaller
                     deviceText = $"{deviceText}\nシリアル：{device.Serial}";
                 }
 
-                AddMessage($"{deviceText}");
-                AddEmptyLine();
+                Message.Add($"{deviceText}");
+                Message.AddEmptyLine();
             }
 
             var validDevices = devices.Where(d => d.IsValidDevice).ToArray();
             if (validDevices.Length == 0)
             {
-                AddMessage("インストール可能なデバイスがありません。");
-                AddEmptyLine();
+                Message.Add("インストール可能なデバイスがありません。");
+                Message.AddEmptyLine();
                 return;
             }
 
@@ -175,8 +99,8 @@ namespace APKInstaller
                     deviceText = $"{deviceText}\n{device.Model}（シリアル：{device.Serial}）";
                 }
 
-                AddMessage($"{deviceText}");
-                AddEmptyLine();
+                Message.Add($"{deviceText}");
+                Message.AddEmptyLine();
             }
 
             if (apks.Length >= 2)
@@ -187,35 +111,35 @@ namespace APKInstaller
                     text = $"{text}\n{apk}";
                 }
 
-                AddMessage($"{text}");
-                AddEmptyLine();
+                Message.Add($"{text}");
+                Message.AddEmptyLine();
             }
 
             foreach (var device in validDevices)
             {
-                AddMessage($"{device.Model} へのインストールを開始します。（シリアル：{device.Serial}）");
+                Message.Add($"{device.Model} へのインストールを開始します。（シリアル：{device.Serial}）");
                 foreach (var apk in apks)
                 {
                     await Task.Run(() => Install(apk, device));
                 }
 
-                AddEmptyLine();
+                Message.AddEmptyLine();
             }
 
-            AddMessage("全てのインストールが完了しました。");
-            AddEmptyLine();
+            Message.Add("全てのインストールが完了しました。");
+            Message.AddEmptyLine();
         }
 
         async Task Install(string path, ADBDevice target)
         {
-            AddMessage($"インストール中...：{path}");
-            await RunADB($"-s {target.Serial} install -r \"{path}\"");
+            Message.Add($"インストール中...：{path}");
+            await ADB.Run($"-s {target.Serial} install -r \"{path}\"", HandleOutput);
         }
 
         async Task<List<ADBDevice>> GetDevices()
         {
             var devices = new List<ADBDevice>();
-            var result = await RunADB("devices", false);
+            var result = await ADB.Run("devices");
             var sr = new StringReader(result);
             var line = "";
             await sr.ReadLineAsync();
@@ -224,7 +148,7 @@ namespace APKInstaller
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 var parameters = line.Split('\t');
                 var device = new ADBDevice { Serial = parameters[0], State = parameters[1] };
-                device.Model = await RunADB($"-s {device.Serial} shell getprop ro.product.model", false);
+                device.Model = await ADB.Run($"-s {device.Serial} shell getprop ro.product.model");
                 device.Model = device.Model.Replace("\n", "");
                 devices.Add(device);
             }
@@ -232,71 +156,24 @@ namespace APKInstaller
             return devices;
         }
 
-        async Task<string> RunADB(string arguments, bool autoHandle = true)
+        static void HandleOutput(string message, Process process)
         {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = pathToADB,
-                Arguments = arguments,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
-
-            var output = "";
-            await EnsureADBDaemonRunning();
-
-            using (var process = new Process())
-            {
-                process.EnableRaisingEvents = true;
-                process.StartInfo = startInfo;
-                process.OutputDataReceived += (sender, args) =>
-                {
-                    if (string.IsNullOrWhiteSpace(args.Data)) return;
-                    if (args.Data.StartsWith("*")) return;
-                    output += $"{args.Data}\n";
-                    if (autoHandle) HandleOutput(args.Data, process);
-                };
-                process.ErrorDataReceived += (sender, args) =>
-                {
-                    if (string.IsNullOrWhiteSpace(args.Data)) return;
-                    if (args.Data.StartsWith("*")) return;
-                    output += $"{args.Data}\n";
-                    if (autoHandle) HandleOutput(args.Data, process);
-                };
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                process.WaitForExit();
-                return output;
-            }
-        }
-
-
-        void HandleOutput(string message, Process process)
-        {
-            if (string.IsNullOrEmpty(message)) return;
-
             if (message.Contains("Success"))
             {
-                AddMessage("インストール完了");
+                Message.Add("インストール完了");
             }
             else if (message.Contains("no devices/emulators found"))
             {
-                AddMessage("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
-                AddEmptyLine();
+                Message.Add("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.AddEmptyLine();
                 process.Kill();
             }
             else
             {
-                AddMessage(message);
-                AddMessage("未知のメッセージを受け取ったため、処理を中止しました。");
-                AddEmptyLine();
+                Message.Add(message);
+                Message.Add("未知のメッセージを受け取ったため、処理を中止しました。");
+                Message.AddEmptyLine();
             }
         }
-
-        void AddMessage(string message) => mainWindow.AddMessage(message);
-        void AddEmptyLine() => mainWindow.AddEmptyLine();
     }
 }
