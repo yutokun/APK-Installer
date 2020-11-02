@@ -49,25 +49,6 @@ namespace APKInstaller
                 fs.Write(adbBinary, 0, adbBinary.Length);
                 pathToADB = adbPath;
             }
-
-            bool IsLocked(string path)
-            {
-                FileStream fs = null;
-                try
-                {
-                    fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-                }
-                catch (IOException)
-                {
-                    return true;
-                }
-                finally
-                {
-                    fs?.Close();
-                }
-
-                return false;
-            }
         }
 
         static async Task EnsureDaemonRunning()
@@ -155,16 +136,38 @@ namespace APKInstaller
                     var process = new Process { StartInfo = startInfo };
                     process.Start();
                     process.WaitForExit();
-
-                    Message.Add("完了");
-                    Message.AddEmptyLine();
                     usingOwnedServer = false;
                 }
 
                 var path = Directory.GetParent(pathToADB).FullName;
+                while (IsLocked(pathToADB))
+                {
+                    Thread.Sleep(500);
+                }
+
                 Directory.Delete(path, true);
+                Message.Add("完了");
                 Thread.Sleep(1000);
             }
+        }
+
+        static bool IsLocked(string path)
+        {
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            finally
+            {
+                fs?.Close();
+            }
+
+            return false;
         }
     }
 }
