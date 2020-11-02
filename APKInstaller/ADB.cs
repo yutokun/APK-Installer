@@ -11,7 +11,7 @@ namespace APKInstaller
         static string pathToADB;
         static bool usingOwnedServer;
 
-        public static async void Initialize()
+        public static async Task Initialize()
         {
             var resourceUri = new Uri("/adb.exe", UriKind.Relative);
             var adbStream = Application.GetResourceStream(resourceUri);

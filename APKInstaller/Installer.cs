@@ -31,9 +31,9 @@ namespace APKInstaller
             instance = null;
         }
 
-        void OnWindowAppeared()
+        async void OnWindowAppeared()
         {
-            ADB.Initialize();
+            await ADB.Initialize();
 
             if (Application.Current.Properties.Contains("apks"))
             {
