@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -15,7 +17,6 @@ namespace APKInstaller
         {
             await EnsureADBExist();
             await EnsureDaemonRunning();
-            App.OnExitAction += Terminate;
         }
 
         static async Task EnsureADBExist()
@@ -135,36 +136,34 @@ namespace APKInstaller
             onReceived?.Invoke(message, process);
         }
 
-        static async void Terminate()
+        public static void Terminate(object sender, CancelEventArgs cancelEventArgs)
         {
             if (usingOwnedServer)
             {
-                await Task.Run(() =>
+                var adbRunning = Process.GetProcessesByName("adb").Length > 0;
+                if (adbRunning)
                 {
-                    var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-                    if (noExistingADB)
+                    var startInfo = new ProcessStartInfo
                     {
-                        var startInfo = new ProcessStartInfo
-                        {
-                            FileName = pathToADB,
-                            Arguments = "kill-server",
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
+                        FileName = pathToADB,
+                        Arguments = "kill-server",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
 
-                        Message.Add("通信機能を終了しています...");
-                        var process = new Process { StartInfo = startInfo };
-                        process.Start();
-                        process.WaitForExit();
+                    Message.Add("通信機能を終了しています...");
+                    var process = new Process { StartInfo = startInfo };
+                    process.Start();
+                    process.WaitForExit();
 
-                        Message.Add("完了");
-                        Message.AddEmptyLine();
-                        usingOwnedServer = true;
-                    }
+                    Message.Add("完了");
+                    Message.AddEmptyLine();
+                    usingOwnedServer = false;
+                }
 
-                    var path = Directory.GetParent(pathToADB).FullName;
-                    Directory.Delete(path, true);
-                });
+                var path = Directory.GetParent(pathToADB).FullName;
+                Directory.Delete(path, true);
+                Thread.Sleep(1000);
             }
         }
     }

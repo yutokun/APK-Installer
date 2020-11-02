@@ -24,6 +24,7 @@ namespace APKInstaller
             mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.OnFileDropped += BatchInstall;
             mainWindow.OnContentRenderedAction += OnWindowAppeared;
+            mainWindow.Closing += ADB.Terminate;
         }
 
         ~Installer()
