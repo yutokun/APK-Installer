@@ -6,9 +6,8 @@ name: CI
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - '**'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,8 +24,11 @@ jobs:
       - uses: warrenbuckley/Setup-MSBuild@v1
       - run: MSBuild.exe $Env:GITHUB_WORKSPACE/APKInstaller/APKInstaller.csproj -p:Configuration=Release
         timeout-minutes: 5
-        
-      - uses: actions/upload-artifact@v1.0.0
+          
+      - uses: softprops/action-gh-release@v0.1.5
         with:
-          name: artifacts
-          path: APKInstaller/bin/Release/APKInstaller.exe
+          draft: true
+          prerelease: false
+          files: APKInstaller/bin/Release/APKInstaller.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
