@@ -36,6 +36,12 @@ namespace APKInstaller
             Redirect.PreviewDrop += MainWindow_OnPreviewDrop;
         }
 
+        public void RemoveDropEvent()
+        {
+            Redirect.PreviewDragOver -= MainWindow_OnPreviewDragOver;
+            Redirect.PreviewDrop -= MainWindow_OnPreviewDrop;
+        }
+
         void MainWindow_OnPreviewDrop(object sender, DragEventArgs e)
         {
             var files = e.Data.GetData(DataFormats.FileDrop) as string[];

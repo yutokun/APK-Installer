@@ -120,6 +120,8 @@ namespace APKInstaller
                 Message.AddEmptyLine();
             }
 
+            mainWindow.RemoveDropEvent();
+
             foreach (var device in validDevices)
             {
                 Message.Add($"{device.Model} へのインストールを開始します。（シリアル：{device.Serial}）");
@@ -131,6 +133,8 @@ namespace APKInstaller
 
             Message.Add("全てのインストールが完了しました。");
             Message.AddEmptyLine();
+
+            mainWindow.AddDropEvent();
         }
 
         static async Task Install(string path, ADBDevice target)
