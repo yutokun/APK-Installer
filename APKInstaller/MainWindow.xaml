@@ -6,16 +6,12 @@
         xmlns:local="clr-namespace:APKInstaller"
         mc:Ignorable="d"
         Name="Window"
-        AllowDrop="True"
         Title="APK Installer" Height="350" Width="525">
     <Grid>
         <TextBox Name="Redirect"
                  BorderThickness="0"
                  IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto"
-                 TextWrapping="Wrap"
-                 AllowDrop="True"
-                 PreviewDragOver="MainWindow_OnPreviewDragOver"
-                 PreviewDrop="MainWindow_OnPreviewDrop" />
+                 TextWrapping="Wrap" />
     </Grid>
 </Window>

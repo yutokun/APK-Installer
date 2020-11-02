@@ -22,7 +22,6 @@ namespace APKInstaller
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
-                mainWindow.OnFileDropped += BatchInstall;
                 mainWindow.OnContentRenderedAction += OnWindowAppeared;
                 mainWindow.Closing += ADB.Terminate;
             }
@@ -49,6 +48,12 @@ namespace APKInstaller
             }
 
             Message.AddEmptyLine();
+
+            if (Application.Current.MainWindow is MainWindow mainWindow)
+            {
+                mainWindow.OnFileDropped += BatchInstall;
+                mainWindow.AddDropEvent();
+            }
         }
 
         async void BatchInstall(string[] files)
