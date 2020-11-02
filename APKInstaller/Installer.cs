@@ -133,13 +133,13 @@ namespace APKInstaller
             Message.AddEmptyLine();
         }
 
-        async Task Install(string path, ADBDevice target)
+        static async Task Install(string path, ADBDevice target)
         {
             Message.Add($"インストール中...：{path}");
             await ADB.Run($"-s {target.Serial} install -r \"{path}\"", HandleOutput);
         }
 
-        async Task<List<ADBDevice>> GetDevices()
+        static async Task<List<ADBDevice>> GetDevices()
         {
             var devices = new List<ADBDevice>();
             var result = await ADB.Run("devices");
