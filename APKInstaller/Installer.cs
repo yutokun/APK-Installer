@@ -11,7 +11,6 @@ namespace APKInstaller
     public class Installer
     {
         static Installer instance;
-        readonly MainWindow mainWindow;
 
         public static void Initialize()
         {
@@ -21,10 +20,12 @@ namespace APKInstaller
 
         Installer()
         {
-            mainWindow = Application.Current.MainWindow as MainWindow;
-            mainWindow.OnFileDropped += BatchInstall;
-            mainWindow.OnContentRenderedAction += OnWindowAppeared;
-            mainWindow.Closing += ADB.Terminate;
+            if (Application.Current.MainWindow is MainWindow mainWindow)
+            {
+                mainWindow.OnFileDropped += BatchInstall;
+                mainWindow.OnContentRenderedAction += OnWindowAppeared;
+                mainWindow.Closing += ADB.Terminate;
+            }
         }
 
         ~Installer()
