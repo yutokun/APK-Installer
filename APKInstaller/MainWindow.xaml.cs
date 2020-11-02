@@ -70,7 +70,7 @@ namespace APKInstaller
             AddMessage(string.Empty);
         }
 
-        void Redraw()
+        static void Redraw()
         {
             var frame = new DispatcherFrame();
             var callback = new DispatcherOperationCallback(obj =>
