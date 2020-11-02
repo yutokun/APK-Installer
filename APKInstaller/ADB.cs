@@ -13,6 +13,13 @@ namespace APKInstaller
 
         public static async Task Initialize()
         {
+            await EnsureADBExist();
+            await EnsureDaemonRunning();
+            App.OnExitAction += Terminate;
+        }
+
+        static async Task EnsureADBExist()
+        {
             var resourceUri = new Uri("/adb.exe", UriKind.Relative);
             var adbStream = Application.GetResourceStream(resourceUri);
             var adbDirectory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
@@ -23,47 +30,42 @@ namespace APKInstaller
             var adbBinary = new byte[adbStream.Stream.Length];
             await adbStream.Stream.ReadAsync(adbBinary, 0, (int)adbStream.Stream.Length);
 
+            if (File.Exists(adbPath))
+            {
+                if (IsLocked(adbPath))
+                {
+                    Message.Add("既存の通信プログラムを利用します。前バージョンのものが存在している可能性があるので注意してください。");
+                    Message.AddEmptyLine();
+                    pathToADB = adbPath;
+                    return;
+                }
+
+                File.Delete(adbPath);
+            }
+
             using (var fs = new FileStream(adbPath, FileMode.Create))
             {
                 fs.Write(adbBinary, 0, adbBinary.Length);
                 pathToADB = adbPath;
             }
 
-            await EnsureDaemonRunning();
-
-            App.OnExitAction += Terminate;
-        }
-
-        static async void Terminate()
-        {
-            if (usingOwnedServer)
+            bool IsLocked(string path)
             {
-                await Task.Run(() =>
+                FileStream fs = null;
+                try
                 {
-                    var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-                    if (noExistingADB)
-                    {
-                        var startInfo = new ProcessStartInfo
-                        {
-                            FileName = pathToADB,
-                            Arguments = "kill-server",
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
+                    fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                }
+                catch (IOException)
+                {
+                    return true;
+                }
+                finally
+                {
+                    fs?.Close();
+                }
 
-                        Message.Add("通信機能を終了しています...");
-                        var process = new Process { StartInfo = startInfo };
-                        process.Start();
-                        process.WaitForExit();
-
-                        Message.Add("完了");
-                        Message.AddEmptyLine();
-                        usingOwnedServer = true;
-                    }
-
-                    var path = Directory.GetParent(pathToADB).FullName;
-                    Directory.Delete(path, true);
-                });
+                return false;
             }
         }
 
@@ -71,8 +73,8 @@ namespace APKInstaller
         {
             await Task.Run(() =>
             {
-                var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
-                if (noExistingADB)
+                var noRunningADB = Process.GetProcessesByName("adb").Length == 0;
+                if (noRunningADB)
                 {
                     var startInfo = new ProcessStartInfo
                     {
@@ -131,6 +133,39 @@ namespace APKInstaller
             output += $"{message}\n";
 
             onReceived?.Invoke(message, process);
+        }
+
+        static async void Terminate()
+        {
+            if (usingOwnedServer)
+            {
+                await Task.Run(() =>
+                {
+                    var noExistingADB = Process.GetProcessesByName("adb").Length == 0;
+                    if (noExistingADB)
+                    {
+                        var startInfo = new ProcessStartInfo
+                        {
+                            FileName = pathToADB,
+                            Arguments = "kill-server",
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        Message.Add("通信機能を終了しています...");
+                        var process = new Process { StartInfo = startInfo };
+                        process.Start();
+                        process.WaitForExit();
+
+                        Message.Add("完了");
+                        Message.AddEmptyLine();
+                        usingOwnedServer = true;
+                    }
+
+                    var path = Directory.GetParent(pathToADB).FullName;
+                    Directory.Delete(path, true);
+                });
+            }
         }
     }
 }
