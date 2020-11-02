@@ -66,7 +66,7 @@ namespace APKInstaller
             var devices = await GetDevices();
             if (devices.Count == 0)
             {
-                Message.Add("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.Add("❌ デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 Message.AddEmptyLine();
                 return;
             }
@@ -159,21 +159,21 @@ namespace APKInstaller
         {
             if (message.Contains("Success"))
             {
-                Message.Add("インストール完了");
+                Message.Add("✔ インストール完了");
             }
             else if (message.Contains("no devices/emulators found"))
             {
-                Message.Add("デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.Add("❌ デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 process.Kill();
             }
             else if (message.Contains("signatures do not match previously installed version"))
             {
-                Message.Add("同じアプリが既にインストールされており、かつ署名が異なるためアップデートできません。APK の作成者に確認を取って下さい。");
+                Message.Add("❌ 同じアプリが既にインストールされており、かつ署名が異なるためアップデートできません。APK の作成者に確認を取って下さい。");
             }
             else
             {
                 Message.Add(message);
-                Message.Add("未知のメッセージを受け取ったため、処理を中止しました。");
+                Message.Add("❌ 未知のメッセージを受け取ったため、処理を中止しました。");
             }
 
             Message.AddEmptyLine();
