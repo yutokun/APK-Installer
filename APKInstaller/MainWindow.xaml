@@ -7,11 +7,17 @@
         mc:Ignorable="d"
         Name="Window"
         Title="APK Installer" Height="350" Width="525">
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="関連付け">
+                <MenuItem Header="APK をダブルクリックでインストール可能にする" Click="Associate" />
+                <MenuItem Header="APK の関連付けを解除" Click="Dissociate" />
+            </MenuItem>
+        </Menu>
         <TextBox Name="Redirect"
                  BorderThickness="0"
                  IsReadOnly="True"
                  VerticalScrollBarVisibility="Auto"
                  TextWrapping="Wrap" />
-    </Grid>
+    </DockPanel>
 </Window>

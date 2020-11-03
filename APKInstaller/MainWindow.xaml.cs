@@ -81,5 +81,9 @@ namespace APKInstaller
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, callback, frame);
             Dispatcher.PushFrame(frame);
         }
+
+        void Associate(object sender, RoutedEventArgs e) => Association.Associate();
+
+        void Dissociate(object sender, RoutedEventArgs e) => Association.Dissociate();
     }
 }
