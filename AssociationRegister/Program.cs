@@ -12,8 +12,8 @@ namespace AssociationRegister
             var command = args[0];
             if (command == "Associate")
             {
-                var path = args[1];
-                Associate(path);
+                var app = args[1];
+                Associate(app);
             }
             else if (command == "Dissociate")
             {
@@ -27,8 +27,6 @@ namespace AssociationRegister
             var description = "Android アプリケーション";
             var verb = "open";
             var verbDescription = "インストール";
-            var iconPath = path;
-            var iconIndex = 0;
 
             var rootKey = Registry.ClassesRoot;
             var regKey = rootKey.CreateSubKey(Extension);
@@ -46,10 +44,6 @@ namespace AssociationRegister
             var cmdKey = rootKey.CreateSubKey($"{FileType}\\shell\\{verb}\\command");
             cmdKey.SetValue("", command);
             cmdKey.Close();
-
-            var iconKey = rootKey.CreateSubKey($"{FileType}\\DefaultIcon");
-            iconKey.SetValue("", $"{iconPath},{iconIndex.ToString()}");
-            iconKey.Close();
         }
 
         public static void Dissociate()

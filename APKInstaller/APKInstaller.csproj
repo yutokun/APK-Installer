@@ -32,6 +32,7 @@
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />
@@ -92,6 +93,9 @@
     </ItemGroup>
     <ItemGroup>
       <Resource Include="AssociationRegister.exe" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Icon.ico" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
