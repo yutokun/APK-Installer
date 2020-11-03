@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 
 namespace AssociationRegister
 {
@@ -11,9 +10,10 @@ namespace AssociationRegister
         public static void Main(string[] args)
         {
             var command = args[0];
+            var path = args[1];
             if (command == "Associate")
             {
-                Associate();
+                Associate(path);
             }
             else if (command == "Dissociate")
             {
@@ -21,13 +21,13 @@ namespace AssociationRegister
             }
         }
 
-        public static void Associate()
+        public static void Associate(string path)
         {
-            var command = $"\"{Assembly.GetEntryAssembly().Location}\" \"%1\"";
+            var command = $"\"{path}\" \"%1\"";
             var description = "Android アプリケーション";
             var verb = "open";
             var verbDescription = "インストール";
-            var iconPath = Assembly.GetEntryAssembly().Location;
+            var iconPath = path;
             var iconIndex = 0;
 
             var rootKey = Registry.ClassesRoot;

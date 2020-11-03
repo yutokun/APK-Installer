@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -65,12 +66,12 @@ namespace APKInstaller
             return false;
         }
 
-        public static void Associate() => Run("Associate");
+        public static void Associate() => Run($"Associate \"{Assembly.GetEntryAssembly().Location}\"");
         public static void Dissociate() => Run("Dissociate");
 
         static void Run(string argument)
         {
-            var isAssociate = argument == "Associate";
+            var isAssociate = argument.StartsWith("Associate");
 
             var startInfo = new ProcessStartInfo
             {
