@@ -44,6 +44,11 @@ namespace APKInstaller
             Redirect.PreviewDrop -= MainWindow_OnPreviewDrop;
         }
 
+        public void UnlockMenu()
+        {
+            AssociateMenu.IsEnabled = true;
+        }
+
         void MainWindow_OnPreviewDrop(object sender, DragEventArgs e)
         {
             var files = e.Data.GetData(DataFormats.FileDrop) as string[];

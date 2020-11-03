@@ -9,7 +9,7 @@
         Title="APK Installer" Height="350" Width="525">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="関連付け">
+            <MenuItem Header="関連付け" Name="AssociateMenu" IsEnabled="False">
                 <MenuItem Header="APK をダブルクリックでインストール可能にする" Click="AssociateClicked" Name="Associate" />
                 <MenuItem Header="APK の関連付けを解除" Click="DissociateClicked" Name="Dissociate" />
             </MenuItem>

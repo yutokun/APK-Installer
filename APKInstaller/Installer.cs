@@ -54,6 +54,7 @@ namespace APKInstaller
 
             mainWindow.OnFileDropped += BatchInstall;
             mainWindow.AddDropEvent();
+            mainWindow.UnlockMenu();
         }
 
         async void BatchInstall(string[] files)
