@@ -35,7 +35,7 @@ namespace APKInstaller
             {
                 if (IsLocked(adbPath))
                 {
-                    Message.Add("既存の通信プログラムを利用します。前バージョンのものが存在している可能性があるので注意してください。");
+                    Message.Add("既に実行中の通信プログラムがあるため、これを利用します。");
                     Message.AddEmptyLine();
                     pathToADB = adbPath;
                     return;
