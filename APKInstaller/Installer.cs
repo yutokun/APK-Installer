@@ -37,22 +37,22 @@ namespace APKInstaller
         async void OnWindowAppeared()
         {
             await ADB.Initialize();
+            await Association.Initialize();
 
             if (Application.Current.Properties.Contains("apks"))
             {
-                Message.Add("起動時に渡された APK をインストールします。");
                 var apks = Application.Current.Properties["apks"] as string[];
                 BatchInstall(apks);
             }
             else
             {
                 Message.Add("ここに APK をドロップするとインストールできます。");
+                Message.AddEmptyLine();
             }
-
-            Message.AddEmptyLine();
 
             mainWindow.OnFileDropped += BatchInstall;
             mainWindow.AddDropEvent();
+            mainWindow.UnlockMenu();
         }
 
         async void BatchInstall(string[] files)

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APKInstaller", "APKInstaller\APKInstaller.csproj", "{B0C56953-59EC-404A-B01F-806729D44426}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegister", "AssociationRegister\AssociationRegister.csproj", "{9F6041B7-1C0C-4944-B69A-2AFC49F478C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{B0C56953-59EC-404A-B01F-806729D44426}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0C56953-59EC-404A-B01F-806729D44426}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0C56953-59EC-404A-B01F-806729D44426}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F6041B7-1C0C-4944-B69A-2AFC49F478C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F6041B7-1C0C-4944-B69A-2AFC49F478C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F6041B7-1C0C-4944-B69A-2AFC49F478C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F6041B7-1C0C-4944-B69A-2AFC49F478C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
