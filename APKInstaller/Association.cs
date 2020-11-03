@@ -76,9 +76,11 @@ namespace APKInstaller
             var startInfo = new ProcessStartInfo
             {
                 FileName = path,
+                Arguments = argument,
                 UseShellExecute = true,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 Verb = "runas",
-                Arguments = argument
             };
 
             try
