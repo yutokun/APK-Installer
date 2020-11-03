@@ -21,6 +21,8 @@ namespace APKInstaller
             Installer.Initialize();
             var ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             Window.Title += $" - v{ver.ProductVersion}";
+            Associate.Icon = UAC.GetShieldImage(true);
+            Dissociate.Icon = UAC.GetShieldImage(true);
         }
 
         protected override void OnContentRendered(EventArgs e)
@@ -82,8 +84,8 @@ namespace APKInstaller
             Dispatcher.PushFrame(frame);
         }
 
-        void Associate(object sender, RoutedEventArgs e) => Association.Associate();
+        void AssociateClicked(object sender, RoutedEventArgs e) => Association.Associate();
 
-        void Dissociate(object sender, RoutedEventArgs e) => Association.Dissociate();
+        void DissociateClicked(object sender, RoutedEventArgs e) => Association.Dissociate();
     }
 }
