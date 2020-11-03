@@ -10,9 +10,9 @@ namespace AssociationRegister
         public static void Main(string[] args)
         {
             var command = args[0];
-            var path = args[1];
             if (command == "Associate")
             {
+                var path = args[1];
                 Associate(path);
             }
             else if (command == "Dissociate")
