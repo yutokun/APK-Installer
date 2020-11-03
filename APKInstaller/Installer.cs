@@ -37,6 +37,7 @@ namespace APKInstaller
         async void OnWindowAppeared()
         {
             await ADB.Initialize();
+            await Association.Initialize();
 
             if (Application.Current.Properties.Contains("apks"))
             {

@@ -90,5 +90,8 @@
     <ItemGroup>
       <Resource Include="adb.exe" />
     </ItemGroup>
+    <ItemGroup>
+      <Resource Include="AssociationRegister.exe" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
