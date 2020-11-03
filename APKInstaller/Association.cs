@@ -90,11 +90,13 @@ namespace APKInstaller
             {
                 var failureMessage = isAssociate ? "APK を本アプリに関連付けられませんでした。" : "関連付けの解除に失敗しました。";
                 Message.Add(failureMessage);
+                Message.AddEmptyLine();
                 return;
             }
 
             var successMessage = isAssociate ? "関連付けに成功しました。今後は APK を直接ダブルクリックすることでインストールを行えます。" : "関連付けを解除しました。";
             Message.Add(successMessage);
+            Message.AddEmptyLine();
         }
     }
 }
