@@ -95,6 +95,7 @@
       <Resource Include="AssociationRegister.exe" />
     </ItemGroup>
     <ItemGroup>
+      <Resource Include="AdbWinApi.dll" />
       <Content Include="Icon.ico" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
