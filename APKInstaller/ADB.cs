@@ -21,33 +21,36 @@ namespace APKInstaller
 
         static async Task EnsureADBExist()
         {
-            var resourceUri = new Uri("/adb.exe", UriKind.Relative);
-            var adbStream = Application.GetResourceStream(resourceUri);
-            var adbDirectory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
-            Directory.CreateDirectory(adbDirectory);
-            var adbPath = Path.Combine(adbDirectory, "adb.exe");
-            Debug.WriteLine(adbPath);
+            pathToADB = await CopyResourceToTempDirectory("/adb.exe");
 
-            var adbBinary = new byte[adbStream.Stream.Length];
-            await adbStream.Stream.ReadAsync(adbBinary, 0, (int)adbStream.Stream.Length);
-
-            if (File.Exists(adbPath))
+            async Task<string> CopyResourceToTempDirectory(string path)
             {
-                if (IsLocked(adbPath))
+                var resourceUri = new Uri($"/{path}", UriKind.Relative);
+                var stream = Application.GetResourceStream(resourceUri);
+                var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
+                Directory.CreateDirectory(directory);
+                var copiedPath = Path.Combine(directory, path);
+
+                var binary = new byte[stream.Stream.Length];
+                await stream.Stream.ReadAsync(binary, 0, (int)stream.Stream.Length);
+                
+                if (File.Exists(copiedPath))
                 {
-                    Message.Add("既に実行中の通信プログラムがあるため、これを利用します。");
-                    Message.AddEmptyLine();
-                    pathToADB = adbPath;
-                    return;
+                    if (IsLocked(copiedPath))
+                    {
+                        Message.Add("既に実行中の通信プログラムがあるため、これを利用します。");
+                        Message.AddEmptyLine();
+                        return copiedPath;
+                    }
+
+                    File.Delete(copiedPath);
                 }
 
-                File.Delete(adbPath);
-            }
-
-            using (var fs = new FileStream(adbPath, FileMode.Create))
-            {
-                fs.Write(adbBinary, 0, adbBinary.Length);
-                pathToADB = adbPath;
+                using (var fs = new FileStream(copiedPath, FileMode.Create))
+                {
+                    fs.Write(binary, 0, binary.Length);
+                    return copiedPath;
+                }
             }
         }
 
