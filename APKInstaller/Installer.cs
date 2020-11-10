@@ -70,7 +70,7 @@ namespace APKInstaller
             var devices = await GetDevices();
             if (devices.Count == 0)
             {
-                Message.Add("❌ デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.Add("❌ デバイスが見つかりません。\n・対応するドライバをインストールしたこと\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 Message.AddEmptyLine();
                 return;
             }
@@ -176,7 +176,7 @@ namespace APKInstaller
             }
             else if (message.Contains("no devices/emulators found"))
             {
-                Message.Add("❌ デバイスが見つかりません。\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
+                Message.Add("❌ デバイスが見つかりません。\n・対応するドライバをインストールしたこと\n・デバイスが開発者モードであること\n・このコンピュータによる USB デバッグが許可されていること\n・正しく接続されていること\nを確認して下さい。");
                 process.Kill();
             }
             else if (message.Contains("signatures do not match previously installed version"))
