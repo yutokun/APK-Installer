@@ -96,6 +96,7 @@
     </ItemGroup>
     <ItemGroup>
       <Resource Include="AdbWinApi.dll" />
+      <Resource Include="AdbWinUsbApi.dll" />
       <Content Include="Icon.ico" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
