@@ -22,6 +22,7 @@ namespace APKInstaller
         static async Task EnsureADBExist()
         {
             pathToADB = await CopyResourceToTempDirectory("/adb.exe");
+            await CopyResourceToTempDirectory("/AdbWinApi.dll");
 
             async Task<string> CopyResourceToTempDirectory(string path)
             {
