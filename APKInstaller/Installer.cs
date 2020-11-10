@@ -165,6 +165,11 @@ namespace APKInstaller
 
         static void HandleOutput(string message, Process process)
         {
+            if (message.Contains("Performing Streamed Install"))
+            {
+                return;
+            }
+            
             if (message.Contains("Success"))
             {
                 Message.Add("✔ インストール完了");
