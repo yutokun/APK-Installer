@@ -38,6 +38,7 @@ namespace APKInstaller
         {
             await ADB.Initialize();
             await Association.Initialize();
+            await Sound.Initialize();
 
             if (Application.Current.Properties.Contains("apks"))
             {
@@ -131,6 +132,7 @@ namespace APKInstaller
                 }
             }
 
+            Sound.Play();
             Message.Add("全てのインストールが完了しました。");
             Message.AddEmptyLine();
 
@@ -169,7 +171,7 @@ namespace APKInstaller
             {
                 return;
             }
-            
+
             if (message.Contains("Success"))
             {
                 Message.Add("✔ インストール完了");

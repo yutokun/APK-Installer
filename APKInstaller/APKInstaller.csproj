@@ -52,6 +52,7 @@
             <Generator>MSBuild:Compile</Generator>
             <SubType>Designer</SubType>
         </ApplicationDefinition>
+        <Compile Include="Sound.cs" />
         <Compile Include="UAC.cs" />
         <Page Include="MainWindow.xaml">
             <Generator>MSBuild:Compile</Generator>
@@ -95,6 +96,7 @@
       <Resource Include="AssociationRegister.exe" />
     </ItemGroup>
     <ItemGroup>
+      <Resource Include="microwave-tin1.wav" />
       <Resource Include="AdbWinApi.dll" />
       <Resource Include="AdbWinUsbApi.dll" />
       <Content Include="Icon.ico" />

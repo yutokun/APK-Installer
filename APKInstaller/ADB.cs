@@ -35,13 +35,11 @@ namespace APKInstaller
 
                 var binary = new byte[stream.Stream.Length];
                 await stream.Stream.ReadAsync(binary, 0, (int)stream.Stream.Length);
-                
+
                 if (File.Exists(copiedPath))
                 {
                     if (IsLocked(copiedPath))
                     {
-                        Message.Add("既に実行中の通信プログラムがあるため、これを利用します。");
-                        Message.AddEmptyLine();
                         return copiedPath;
                     }
 
