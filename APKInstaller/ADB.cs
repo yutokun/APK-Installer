@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace APKInstaller
 {
@@ -21,37 +20,13 @@ namespace APKInstaller
 
         static async Task EnsureADBExist()
         {
-            pathToADB = await CopyResourceToTempDirectory("adb.exe");
-            await CopyResourceToTempDirectory("AdbWinApi.dll");
-            await CopyResourceToTempDirectory("AdbWinUsbApi.dll");
-
-            async Task<string> CopyResourceToTempDirectory(string path)
+            pathToADB = await Resource.Extract("adb.exe", () =>
             {
-                var resourceUri = new Uri($"/{path}", UriKind.Relative);
-                var stream = Application.GetResourceStream(resourceUri);
-                var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
-                Directory.CreateDirectory(directory);
-                var copiedPath = Path.Combine(directory, path);
-
-                var binary = new byte[stream.Stream.Length];
-                await stream.Stream.ReadAsync(binary, 0, (int)stream.Stream.Length);
-
-                if (File.Exists(copiedPath))
-                {
-                    if (IsLocked(copiedPath))
-                    {
-                        return copiedPath;
-                    }
-
-                    File.Delete(copiedPath);
-                }
-
-                using (var fs = new FileStream(copiedPath, FileMode.Create))
-                {
-                    fs.Write(binary, 0, binary.Length);
-                    return copiedPath;
-                }
-            }
+                Message.Add("既に実行中の通信プログラムがあるため、これを利用します。");
+                Message.AddEmptyLine();
+            });
+            await Resource.Extract("AdbWinApi.dll");
+            await Resource.Extract("AdbWinUsbApi.dll");
         }
 
         static async Task EnsureDaemonRunning()
@@ -143,7 +118,7 @@ namespace APKInstaller
                 }
 
                 var path = Directory.GetParent(pathToADB).FullName;
-                while (IsLocked(pathToADB))
+                while (Resource.IsLocked(pathToADB))
                 {
                     Thread.Sleep(500);
                 }
@@ -152,25 +127,6 @@ namespace APKInstaller
                 Message.Add("完了");
                 Thread.Sleep(1000);
             }
-        }
-
-        static bool IsLocked(string path)
-        {
-            FileStream fs = null;
-            try
-            {
-                fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            }
-            catch (IOException)
-            {
-                return true;
-            }
-            finally
-            {
-                fs?.Close();
-            }
-
-            return false;
         }
     }
 }
