@@ -1,10 +1,7 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace APKInstaller
 {
@@ -14,56 +11,11 @@ namespace APKInstaller
 
         public static async Task Initialize()
         {
-            await EnsureAssociationRegisterExist();
-        }
-
-        static async Task EnsureAssociationRegisterExist()
-        {
-            var resourceUri = new Uri("/Resources/AssociationRegister.exe", UriKind.Relative);
-            var stream = Application.GetResourceStream(resourceUri);
-            var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
-            Directory.CreateDirectory(directory);
-            path = Path.Combine(directory, "AssociationRegister.exe");
-            Debug.WriteLine(path);
-
-            var adbBinary = new byte[stream.Stream.Length];
-            await stream.Stream.ReadAsync(adbBinary, 0, (int)stream.Stream.Length);
-
-            if (File.Exists(path))
+            path = await Resource.Extract("AssociationRegister.exe", () =>
             {
-                if (IsLocked(path))
-                {
-                    Message.Add("既存の関連付けプログラムを利用します。前バージョンのものが存在している可能性があるので注意してください。");
-                    Message.AddEmptyLine();
-                    return;
-                }
-
-                File.Delete(path);
-            }
-
-            using (var fs = new FileStream(path, FileMode.Create))
-            {
-                fs.Write(adbBinary, 0, adbBinary.Length);
-            }
-        }
-
-        static bool IsLocked(string path)
-        {
-            FileStream fs = null;
-            try
-            {
-                fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            }
-            catch (IOException)
-            {
-                return true;
-            }
-            finally
-            {
-                fs?.Close();
-            }
-
-            return false;
+                Message.Add("既存の関連付けプログラムを利用します。前バージョンのものが存在している可能性があるので注意してください。");
+                Message.AddEmptyLine();
+            });
         }
 
         public static void Associate() => Run($"Associate \"{Assembly.GetEntryAssembly().Location}\"");
