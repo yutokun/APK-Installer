@@ -9,7 +9,7 @@ namespace APKInstaller
     {
         public static async Task<string> Extract(string path, Action onPathLocked = null)
         {
-            var resourceUri = new Uri($"/{path}", UriKind.Relative);
+            var resourceUri = new Uri($"/Resources/{path}", UriKind.Relative);
             var stream = Application.GetResourceStream(resourceUri);
             var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
             Directory.CreateDirectory(directory);

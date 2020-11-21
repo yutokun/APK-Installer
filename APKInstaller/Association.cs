@@ -19,7 +19,7 @@ namespace APKInstaller
 
         static async Task EnsureAssociationRegisterExist()
         {
-            var resourceUri = new Uri("/AssociationRegister.exe", UriKind.Relative);
+            var resourceUri = new Uri("/Resources/AssociationRegister.exe", UriKind.Relative);
             var stream = Application.GetResourceStream(resourceUri);
             var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
             Directory.CreateDirectory(directory);

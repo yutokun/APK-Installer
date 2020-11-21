@@ -91,15 +91,13 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
-      <Resource Include="adb.exe" />
+      <Resource Include="Resources\adb.exe" />
+      <Resource Include="Resources\AdbWinApi.dll" />
+      <Resource Include="Resources\AdbWinUsbApi.dll" />
+      <Resource Include="Resources\AssociationRegister.exe" />
+      <Resource Include="Resources\microwave-tin1.wav" />
     </ItemGroup>
     <ItemGroup>
-      <Resource Include="AssociationRegister.exe" />
-    </ItemGroup>
-    <ItemGroup>
-      <Resource Include="microwave-tin1.wav" />
-      <Resource Include="AdbWinApi.dll" />
-      <Resource Include="AdbWinUsbApi.dll" />
       <Content Include="Icon.ico" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
