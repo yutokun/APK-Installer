@@ -20,8 +20,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - uses: warrenbuckley/Setup-MSBuild@v1
+        
+      - uses: microsoft/setup-msbuild@v1.0.2
+        
       - run: MSBuild.exe $Env:GITHUB_WORKSPACE/APKInstaller/APKInstaller.csproj -p:Configuration=Release
         timeout-minutes: 5
           
