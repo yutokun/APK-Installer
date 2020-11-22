@@ -11,7 +11,7 @@ namespace APKInstaller
 {
     public static class Resource
     {
-        static string TempDirectory => Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
+        public static string TempDirectory => Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
 
         public static async Task<string> Extract(string path, Action onPathLocked = null)
         {

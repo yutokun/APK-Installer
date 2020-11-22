@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace APKInstaller
@@ -8,6 +9,8 @@ namespace APKInstaller
     public static class ADB
     {
         static string pathToADB;
+        static string RunningOwnedADBMarkerPath => Path.Combine(Resource.TempDirectory, "UsingOwnADB");
+        static bool RunningOwnedADB => File.Exists(RunningOwnedADBMarkerPath);
 
         public static async Task Initialize()
         {
@@ -45,6 +48,8 @@ namespace APKInstaller
                     var process = new Process { StartInfo = startInfo };
                     process.Start();
                     process.WaitForExit();
+
+                    using (var fs = File.Create(RunningOwnedADBMarkerPath)) fs.Close();
 
                     Message.Add("完了");
                     Message.AddEmptyLine();
@@ -94,6 +99,7 @@ namespace APKInstaller
         public static void Terminate(object sender, CancelEventArgs cancelEventArgs)
         {
             if (Resource.OtherInstanceExists()) return;
+            if (!RunningOwnedADB) return;
 
             var adbRunning = Process.GetProcessesByName("adb").Length > 0;
             if (adbRunning)
