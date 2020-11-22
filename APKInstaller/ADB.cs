@@ -30,8 +30,8 @@ namespace APKInstaller
         {
             await Task.Run(() =>
             {
-                var noRunningADB = Process.GetProcessesByName("adb").Length == 0;
-                if (noRunningADB)
+                var noAdbRunning = Process.GetProcessesByName("adb").Length == 0;
+                if (noAdbRunning)
                 {
                     var startInfo = new ProcessStartInfo
                     {
