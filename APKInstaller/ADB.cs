@@ -8,7 +8,6 @@ namespace APKInstaller
     public static class ADB
     {
         static string pathToADB;
-        static bool usingOwnedServer;
 
         public static async Task Initialize()
         {
@@ -49,7 +48,6 @@ namespace APKInstaller
 
                     Message.Add("完了");
                     Message.AddEmptyLine();
-                    usingOwnedServer = true;
                 }
             });
         }
@@ -95,26 +93,23 @@ namespace APKInstaller
 
         public static void Terminate(object sender, CancelEventArgs cancelEventArgs)
         {
-            // TODO 他の APK Installer が起動しているときにも return
-            if (usingOwnedServer)
-            {
-                var adbRunning = Process.GetProcessesByName("adb").Length > 0;
-                if (adbRunning)
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        FileName = pathToADB,
-                        Arguments = "kill-server",
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    };
+            if (Resource.OtherInstanceExists()) return;
 
-                    Message.Add("通信機能を終了しています...");
-                    var process = new Process { StartInfo = startInfo };
-                    process.Start();
-                    process.WaitForExit();
-                    usingOwnedServer = false;
-                }
+            var adbRunning = Process.GetProcessesByName("adb").Length > 0;
+            if (adbRunning)
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = pathToADB,
+                    Arguments = "kill-server",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                Message.Add("通信機能を終了しています...");
+                var process = new Process { StartInfo = startInfo };
+                process.Start();
+                process.WaitForExit();
             }
         }
     }

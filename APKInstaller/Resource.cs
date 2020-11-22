@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -61,7 +63,7 @@ namespace APKInstaller
                 FileStream fs = null;
                 try
                 {
-                    fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
+                    fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
                 }
                 catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
                 {
@@ -78,7 +80,8 @@ namespace APKInstaller
 
         public static void Cleanup(object sender, CancelEventArgs cancelEventArgs)
         {
-            // TODO ほかのインスタンスが起動しているときはクリーンアップしない
+            if (OtherInstanceExists()) return;
+
             while (IsLocked(TempDirectory))
             {
                 Thread.Sleep(500);
@@ -87,6 +90,12 @@ namespace APKInstaller
             Directory.Delete(TempDirectory, true);
             Message.Add("完了");
             Thread.Sleep(1000);
+        }
+
+        public static bool OtherInstanceExists()
+        {
+            var name = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
+            return Process.GetProcessesByName(name).Length > 1;
         }
     }
 }
