@@ -151,7 +151,12 @@ namespace APKInstaller
             var result = await ADB.Run("devices");
             var sr = new StringReader(result);
             var line = "";
-            await sr.ReadLineAsync();
+
+            do
+            {
+                line = await sr.ReadLineAsync();
+            } while (line != "List of devices attached");
+
             while ((line = await sr.ReadLineAsync()) != null)
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
