@@ -1,8 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace APKInstaller
@@ -97,6 +95,7 @@ namespace APKInstaller
 
         public static void Terminate(object sender, CancelEventArgs cancelEventArgs)
         {
+            // TODO 他の APK Installer が起動しているときにも return
             if (usingOwnedServer)
             {
                 var adbRunning = Process.GetProcessesByName("adb").Length > 0;
@@ -116,16 +115,6 @@ namespace APKInstaller
                     process.WaitForExit();
                     usingOwnedServer = false;
                 }
-
-                var path = Directory.GetParent(pathToADB).FullName;
-                while (Resource.IsLocked(pathToADB))
-                {
-                    Thread.Sleep(500);
-                }
-
-                Directory.Delete(path, true);
-                Message.Add("完了");
-                Thread.Sleep(1000);
             }
         }
     }

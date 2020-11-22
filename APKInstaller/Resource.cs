@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -7,13 +9,14 @@ namespace APKInstaller
 {
     public static class Resource
     {
+        static string TempDirectory => Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
+
         public static async Task<string> Extract(string path, Action onPathLocked = null)
         {
             var resourceUri = new Uri($"/Resources/{path}", UriKind.Relative);
             var stream = Application.GetResourceStream(resourceUri);
-            var directory = Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
-            Directory.CreateDirectory(directory);
-            var copiedPath = Path.Combine(directory, path);
+            Directory.CreateDirectory(TempDirectory);
+            var copiedPath = Path.Combine(TempDirectory, path);
 
             var binary = new byte[stream.Stream.Length];
             await stream.Stream.ReadAsync(binary, 0, (int)stream.Stream.Length);
@@ -36,23 +39,54 @@ namespace APKInstaller
             }
         }
 
-        public static bool IsLocked(string path)
+        static bool IsLocked(string path)
         {
-            FileStream fs = null;
-            try
+            var isDirectory = File.GetAttributes(path).HasFlag(FileAttributes.Directory);
+
+            if (isDirectory)
             {
-                fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                var info = new DirectoryInfo(path);
+                try
+                {
+                    info.GetDirectories();
+                    return false;
+                }
+                catch (Exception)
+                {
+                    return true;
+                }
             }
-            catch (IOException)
+            else
             {
-                return true;
+                FileStream fs = null;
+                try
+                {
+                    fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
+                }
+                catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+                {
+                    return true;
+                }
+                finally
+                {
+                    fs?.Close();
+                }
+
+                return false;
             }
-            finally
+        }
+
+        public static void Cleanup(object sender, CancelEventArgs cancelEventArgs)
+        {
+            // TODO ほかのインスタンスが起動しているときはクリーンアップしない
+            while (IsLocked(TempDirectory))
             {
-                fs?.Close();
+                Thread.Sleep(500);
             }
 
-            return false;
+            Directory.Delete(TempDirectory, true);
+            Message.Add("完了");
+            Thread.Sleep(1000);
         }
     }
 }
