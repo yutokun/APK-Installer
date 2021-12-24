@@ -99,6 +99,7 @@
     </ItemGroup>
     <ItemGroup>
       <Content Include="Icon.ico" />
+      <Resource Include="Resources\WinSparkle.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
