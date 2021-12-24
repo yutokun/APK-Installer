@@ -13,12 +13,17 @@ namespace APKInstaller
     {
         public static string TempDirectory => Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
 
-        public static async Task<string> Extract(string path, Action onPathLocked = null)
+        public static async Task<string> Extract(string fileName, Action onPathLocked = null)
         {
-            var resourceUri = new Uri($"/Resources/{path}", UriKind.Relative);
+            return await ExtractTo(fileName, TempDirectory, onPathLocked);
+        }
+
+        public static async Task<string> ExtractTo(string fileName, string destinationDirectory, Action onPathLocked = null)
+        {
+            var resourceUri = new Uri($"/Resources/{fileName}", UriKind.Relative);
             var stream = Application.GetResourceStream(resourceUri);
-            Directory.CreateDirectory(TempDirectory);
-            var copiedPath = Path.Combine(TempDirectory, path);
+            Directory.CreateDirectory(destinationDirectory);
+            var copiedPath = Path.Combine(destinationDirectory, fileName);
 
             var binary = new byte[stream.Stream.Length];
             await stream.Stream.ReadAsync(binary, 0, (int)stream.Stream.Length);
