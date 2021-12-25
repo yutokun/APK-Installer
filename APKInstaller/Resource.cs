@@ -11,7 +11,15 @@ namespace APKInstaller
 {
     public static class Resource
     {
-        public static string TempDirectory => Path.Combine(Directory.GetParent(Path.GetTempFileName()).FullName, "APKInstaller");
+        public static string TempDirectory
+        {
+            get
+            {
+                var path = Path.Combine(Path.GetTempPath(), "APKInstaller");
+                Directory.CreateDirectory(path);
+                return path;
+            }
+        }
 
         public static async Task<string> Extract(string fileName, Action onPathLocked = null)
         {
@@ -22,7 +30,6 @@ namespace APKInstaller
         {
             var resourceUri = new Uri($"/Resources/{fileName}", UriKind.Relative);
             var stream = Application.GetResourceStream(resourceUri);
-            Directory.CreateDirectory(destinationDirectory);
             var copiedPath = Path.Combine(destinationDirectory, fileName);
 
             var binary = new byte[stream.Stream.Length];
