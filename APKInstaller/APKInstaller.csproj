@@ -55,6 +55,7 @@
         <Compile Include="Resource.cs" />
         <Compile Include="Sound.cs" />
         <Compile Include="UAC.cs" />
+        <Compile Include="Updater.cs" />
         <Compile Include="WinSparkle.cs" />
         <Page Include="MainWindow.xaml">
             <Generator>MSBuild:Compile</Generator>

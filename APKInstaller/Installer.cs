@@ -24,8 +24,10 @@ namespace APKInstaller
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
                 Installer.mainWindow = mainWindow;
+                Updater.Initialize();
                 mainWindow.OnContentRenderedAction += OnWindowAppeared;
                 mainWindow.Closing += ADB.Terminate;
+                mainWindow.Closing += Updater.Cleanup;
                 mainWindow.Closing += Resource.Cleanup;
             }
         }
