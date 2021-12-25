@@ -90,50 +90,6 @@ namespace APKInstaller
             }
         }
 
-        public static void Cleanup(object sender, CancelEventArgs cancelEventArgs)
-        {
-            if (OtherInstanceExists()) return;
-
-            Message.Add("クリーンアップ中...");
-
-            while (IsLocked(TempDirectory))
-            {
-                Thread.Sleep(500);
-            }
-
-            var directoryIsEmpty = true;
-            var files = Directory.GetFiles(TempDirectory);
-            foreach (var file in files)
-            {
-                var tryout = 0;
-                while (IsLocked(file) && tryout < 5)
-                {
-                    ++tryout;
-                    Thread.Sleep(200);
-                }
-
-                if (tryout >= 5)
-                {
-                    directoryIsEmpty = false;
-                    continue;
-                }
-
-                File.Delete(file);
-            }
-
-            if (directoryIsEmpty)
-            {
-                Directory.Delete(TempDirectory, true);
-                Message.Add("完了");
-                Thread.Sleep(1000);
-            }
-            else
-            {
-                Message.Add("他のアプリケーションが通信機能を使用しているため、クリーンアップをスキップしました。");
-                Thread.Sleep(4000);
-            }
-        }
-
         public static bool OtherInstanceExists()
         {
             var name = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);

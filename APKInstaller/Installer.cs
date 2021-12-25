@@ -28,7 +28,6 @@ namespace APKInstaller
                 mainWindow.OnContentRenderedAction += OnWindowAppeared;
                 mainWindow.Closing += ADB.Terminate;
                 mainWindow.Closing += Updater.Cleanup;
-                mainWindow.Closing += Resource.Cleanup;
             }
         }
 
