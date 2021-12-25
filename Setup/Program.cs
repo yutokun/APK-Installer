@@ -7,9 +7,16 @@ namespace Setup
     {
         public static void Main()
         {
-            var files = new Dir(@"%ProgramFiles%\yutokun\APK Installer", new File(@"..\APKInstaller\bin\Release\APKInstaller.exe"));
-            var project = new Project("APK Installer", files);
-            project.GUID = new Guid();
+            var exe = new File(@"..\APKInstaller\bin\Release\APKInstaller.exe");
+            exe.Shortcuts = new[] { new FileShortcut("APK Installer", "%ProgramMenu%") };
+            var files = new Dir(@"%ProgramFiles%\yutokun\APK Installer", exe);
+            var project = new Project("APK Installer", files)
+            {
+                GUID = new Guid("f9b8f955-f62f-4765-a2e3-c94c198b3eb0"),
+                Version = new Version("1.4.1"),
+                LicenceFile = "../LICENSE.rtf",
+                Language = "ja-JP"
+            };
             Compiler.BuildMsi(project);
         }
     }

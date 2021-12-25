@@ -6,8 +6,8 @@
 </auto-generated>
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="00000000-0000-0000-0000-000010000001" Name="APK Installer" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="00000000-0000-0000-0000-000000000000" Manufacturer="windt">
-    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+  <Product Id="f9b8f955-f62f-4765-a2e3-c94c298b3eb1" Name="APK Installer" Language="1041" Codepage="shift_jis" Version="1.0.0.0" UpgradeCode="f9b8f955-f62f-4765-a2e3-c94c198b3eb0" Manufacturer="windt">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="shift_jis" Languages="1041" />
     <Media Id="1" Cabinet="APK20Installer.cab" EmbedCab="yes" />
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -15,21 +15,61 @@
         <Directory Id="ProgramFilesFolder.yutokun" Name="yutokun">
           <Directory Id="INSTALLDIR" Name="APK Installer">
 
-            <Component Id="Component.APKInstaller.exe_949704548" Guid="00000000-0000-0000-0000-00005d83c287">
-              <File Id="APKInstaller.exe_949704548" Source="..\APKInstaller\bin\Release\APKInstaller.exe" />
+            <Component Id="Component.APKInstaller.exe_949704548" Guid="f9b8f955-f62f-4765-a2e3-c94c760e0037">
+              <File Id="APKInstaller.exe_949704548" Source="..\APKInstaller\bin\Release\APKInstaller.exe">
+                <Shortcut Id="Shortcut.APKInstaller.exe_949704548.APK20Installer__" WorkingDirectory="INSTALLDIR" Directory="ProgramMenuFolder" Name="APK Installer.lnk" />
+              </File>
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
             </Component>
 
           </Directory>
         </Directory>
       </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenuFolder">
+
+        <Component Id="Component.ProgramMenuFolder.EmptyDirectory" Guid="f9b8f955-f62f-4765-a2e3-c94c6b4dbfd5">
+          <CreateFolder />
+
+          <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+            <RegistryValue Value="0" Type="string" KeyPath="yes" />
+          </RegistryKey>
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="f9b8f955-f62f-4765-a2e3-c94c8c5bae23" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
     </Directory>
+
+    <UI />
+
+    <WixVariable Id="WixUILicenseRtf" Value="../LICENSE.rtf" />
+
+    <CustomAction Id="Set_WixSharp_EnableUninstallFullUI_Action_Props" Property="WixSharp_EnableUninstallFullUI_Action" Value="MSIEXEC_EXTRA_PARAMETERS=;INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_EnableUninstallFullUI_Action" BinaryKey="WixSharp_EnableUninstallFullUI_Action_File" DllEntry="WixSharp_EnableUninstallFullUI_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="WixSharp_EnableUninstallFullUI_Action_File" SourceFile="WixSharp.CA.dll" />
 
     <UIRef Id="WixUI_Minimal" />
     <UIRef Id="WixUI_ErrorProgressText" />
 
     <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
       <ComponentRef Id="Component.APKInstaller.exe_949704548" />
+      <ComponentRef Id="Component.ProgramMenuFolder.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
     </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="Set_WixSharp_EnableUninstallFullUI_Action_Props" Before="InstallFinalize" />
+      <Custom Action="WixSharp_EnableUninstallFullUI_Action" After="Set_WixSharp_EnableUninstallFullUI_Action_Props"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
 
   </Product>
 </Wix>
