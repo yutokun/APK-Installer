@@ -32,7 +32,7 @@
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
-        <ApplicationIcon>Icon.ico</ApplicationIcon>
+        <ApplicationIcon>Images\app.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />
@@ -100,7 +100,9 @@
       <Resource Include="Resources\microwave-tin1.wav" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="Icon.ico" />
+      <Content Include="Images\apk.ico" />
+      <Content Include="Images\app.ico" />
+      <Content Include="Images\Icons.afdesign" />
       <Resource Include="Resources\WinSparkle.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
