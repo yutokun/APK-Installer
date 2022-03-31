@@ -27,6 +27,7 @@ namespace AssociationRegister
             var description = "Android アプリケーション";
             var verb = "open";
             var verbDescription = "インストール";
+            var icon = $"\"{path}\",1";
 
             var rootKey = Registry.ClassesRoot;
             var regKey = rootKey.CreateSubKey(Extension);
@@ -44,6 +45,10 @@ namespace AssociationRegister
             var cmdKey = rootKey.CreateSubKey($"{FileType}\\shell\\{verb}\\command");
             cmdKey.SetValue("", command);
             cmdKey.Close();
+
+            var iconKey = rootKey.CreateSubKey($"{FileType}\\DefaultIcon");
+            iconKey.SetValue("", icon);
+            iconKey.Close();
         }
 
         public static void Dissociate()

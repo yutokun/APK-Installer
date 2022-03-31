@@ -41,4 +41,12 @@
 
 ## License
 
+### APK Installer
+
 [Apache License 2.0](LICENSE)
+
+### InsertIcons (included in this repository)
+
+[MIT License](https://github.com/einaregilsson/InsertIcons/blob/master/LICENSE)
+
+Copyright (c) 2012 Einar Egilsson

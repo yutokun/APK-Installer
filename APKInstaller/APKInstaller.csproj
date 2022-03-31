@@ -34,6 +34,10 @@
         <WarningLevel>4</WarningLevel>
         <ApplicationIcon>Images\app.ico</ApplicationIcon>
     </PropertyGroup>
+    <PropertyGroup>
+      <PostBuildEvent>cd ../../
+InsertIcons.exe "bin\Release\APKInstaller.exe" "Images\apk.ico"</PostBuildEvent>
+    </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />
         <Reference Include="System.Core" />
@@ -100,9 +104,9 @@
       <Resource Include="Resources\microwave-tin1.wav" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="Images\apk.ico" />
-      <Content Include="Images\app.ico" />
-      <Content Include="Images\Icons.afdesign" />
+      <None Include="Images\apk.ico" />
+      <None Include="Images\app.ico" />
+      <None Include="Images\Icons.afdesign" />
       <Resource Include="Resources\WinSparkle.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
