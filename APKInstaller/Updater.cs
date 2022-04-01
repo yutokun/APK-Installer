@@ -11,7 +11,7 @@ namespace APKInstaller
             await Resource.ExtractTo("WinSparkle.dll", Directory.GetCurrentDirectory());
             WinSparkle.win_sparkle_set_appcast_url("https://appcast.yutokun.com/apk-installer/appcast.xml");
             WinSparkle.win_sparkle_init();
-            WinSparkle.win_sparkle_check_update_with_ui();
+            WinSparkle.win_sparkle_check_update_without_ui();
         }
 
         public static void Cleanup(object sender, CancelEventArgs cancelEventArgs)

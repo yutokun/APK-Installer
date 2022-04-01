@@ -22,5 +22,8 @@ namespace APKInstaller
 
         [DllImport("WinSparkle.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void win_sparkle_check_update_with_ui();
+
+        [DllImport("WinSparkle.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void win_sparkle_check_update_without_ui();
     }
 }
