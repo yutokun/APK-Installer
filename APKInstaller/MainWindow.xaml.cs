@@ -92,5 +92,7 @@ namespace APKInstaller
         void AssociateClicked(object sender, RoutedEventArgs e) => Association.Associate();
 
         void DissociateClicked(object sender, RoutedEventArgs e) => Association.Dissociate();
+
+        void CheckForUpdatesClicked(object sender, RoutedEventArgs e) => WinSparkle.win_sparkle_check_update_with_ui();
     }
 }
