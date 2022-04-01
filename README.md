@@ -50,3 +50,9 @@
 [MIT License](https://github.com/einaregilsson/InsertIcons/blob/master/LICENSE)
 
 Copyright (c) 2012 Einar Egilsson
+
+### WixSharp
+
+[MIT License](https://github.com/oleg-shilo/wixsharp/blob/master/LICENSE)
+
+Copyright (c) 2016 oleg-shilo
