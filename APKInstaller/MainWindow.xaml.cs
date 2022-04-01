@@ -94,5 +94,10 @@ namespace APKInstaller
         void DissociateClicked(object sender, RoutedEventArgs e) => Association.Dissociate();
 
         void CheckForUpdatesClicked(object sender, RoutedEventArgs e) => WinSparkle.win_sparkle_check_update_with_ui();
+
+        void OpenGitHubClicked(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/yutokun/APK-Installer");
+        }
     }
 }
