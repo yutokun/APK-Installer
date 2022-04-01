@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace APKInstaller
 {
-    public class WinSparkle
+    public static class WinSparkle
     {
         [DllImport("WinSparkle.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void win_sparkle_init();

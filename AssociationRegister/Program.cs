@@ -2,7 +2,7 @@
 
 namespace AssociationRegister
 {
-    internal class Program
+    internal static class Program
     {
         const string Extension = ".apk";
         const string FileType = "APKInstaller.apk";
@@ -21,7 +21,7 @@ namespace AssociationRegister
             }
         }
 
-        public static void Associate(string path)
+        static void Associate(string path)
         {
             var command = $"\"{path}\" \"%1\"";
             var description = "Android アプリケーション";
@@ -51,7 +51,7 @@ namespace AssociationRegister
             iconKey.Close();
         }
 
-        public static void Dissociate()
+        static void Dissociate()
         {
             Registry.ClassesRoot.DeleteSubKeyTree(Extension);
             Registry.ClassesRoot.DeleteSubKeyTree(FileType);

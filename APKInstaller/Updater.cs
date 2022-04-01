@@ -3,7 +3,7 @@ using System.IO;
 
 namespace APKInstaller
 {
-    public class Updater
+    public static class Updater
     {
         public static async void Initialize()
         {

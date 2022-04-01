@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace APKInstaller
 {
-    public class UAC
+    public static class UAC
     {
         const int MAX_PATH = 260;
         const uint SIID_SHIELD = 0x00000004D;
