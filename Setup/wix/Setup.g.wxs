@@ -6,7 +6,7 @@
 </auto-generated>
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="f9b8f955-f62f-4765-a2e3-c94c298b3eb1" Name="APK Installer" Language="1041" Codepage="shift_jis" Version="1.0.0.0" UpgradeCode="f9b8f955-f62f-4765-a2e3-c94c198b3eb0" Manufacturer="windt">
+  <Product Id="f9b8f955-f62f-4765-a2e3-c94c198b3eb0" Name="APK Installer" Language="1041" Codepage="shift_jis" Version="1.4.1" UpgradeCode="f9b8f955-f62f-4765-a2e3-c94c198b3eb1" Manufacturer="windt">
     <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="shift_jis" Languages="1041" />
     <Media Id="1" Cabinet="APK20Installer.cab" EmbedCab="yes" />
 
@@ -52,13 +52,21 @@
 
     <WixVariable Id="WixUILicenseRtf" Value="../LICENSE.rtf" />
 
-    <CustomAction Id="Set_WixSharp_EnableUninstallFullUI_Action_Props" Property="WixSharp_EnableUninstallFullUI_Action" Value="MSIEXEC_EXTRA_PARAMETERS=;INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
-    <CustomAction Id="WixSharp_EnableUninstallFullUI_Action" BinaryKey="WixSharp_EnableUninstallFullUI_Action_File" DllEntry="WixSharp_EnableUninstallFullUI_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="DGEM" Schedule="afterInstallInitialize" />
 
-    <Binary Id="WixSharp_EnableUninstallFullUI_Action_File" SourceFile="WixSharp.CA.dll" />
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_BeforeInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_BeforeInstall_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_WixSharp_AfterInstall_Action_Props" Property="WixSharp_AfterInstall_Action" Value="WixSharp_AfterInstall_Handlers=[WixSharp_AfterInstall_Handlers];WIXSHARP_RUNTIME_DATA=[WIXSHARP_RUNTIME_DATA];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductName=[ProductName];FOUNDPREVIOUSVERSION=[FOUNDPREVIOUSVERSION];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_AfterInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_AfterInstall_Action" Return="check" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
 
     <UIRef Id="WixUI_Minimal" />
     <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WixSharp_BeforeInstall_Handlers" Value="Setup, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null|Setup.Program|KillApp" />
+    <Property Id="WixSharp_AfterInstall_Handlers" Value="Setup, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null|Setup.Program|RemoveTempFolder" />
+    <Property Id="REINSTALLMODE" Value="omus" />
 
     <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
       <ComponentRef Id="Component.APKInstaller.exe_949704548" />
@@ -67,8 +75,10 @@
     </Feature>
 
     <InstallExecuteSequence>
-      <Custom Action="Set_WixSharp_EnableUninstallFullUI_Action_Props" Before="InstallFinalize" />
-      <Custom Action="WixSharp_EnableUninstallFullUI_Action" After="Set_WixSharp_EnableUninstallFullUI_Action_Props"> (NOT Installed) </Custom>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="WixSharp_BeforeInstall_Action" Before="InstallFiles">1</Custom>
+      <Custom Action="Set_WixSharp_AfterInstall_Action_Props" After="InstallFiles" />
+      <Custom Action="WixSharp_AfterInstall_Action" After="Set_WixSharp_AfterInstall_Action_Props">1</Custom>
     </InstallExecuteSequence>
 
   </Product>
